@@ -493,4 +493,93 @@ st.subheader("📈 Projeção do Retorno Fiscal Anual (do Ano 0 até a Cobrança
 
 # Construção da linha do tempo: Ano 0 (Início da Obra/Projeto) até o Ano final de transição
 # Ano 0: Imposto Indireto = 0, IPTU = 0 (Isenção de obra)
-# A partir do Ano 1 (Habite-se / Operação): Atividade inicia e gera imposto
+# A partir do Ano 1 (Habite-se / Operação): Atividade inicia e gera imposto indireto anual. IPTU sobe gradualmente na escada.
+
+eixo_x_anos = ["Ano 0"] + [f"Ano {a}" for a in anos]
+iptu_linha_anual = [0] + pagos
+
+if t["faturamento_m2"] is not None:
+    indireto_linha_anual = [0] + [impostos_indiretos for _ in anos]
+    label_indireto = "Impostos Indiretos Anuais (ISS/ICMS)"
+else:
+    # Para Habitação, ITBI ocorre no Ano 1 de vendas
+    indireto_linha_anual = [0, itbi_est] + [0 for _ in range(len(anos) - 1)]
+    label_indireto = "Arrecadação de ITBI (Vendas)"
+
+fig_imp = go.Figure()
+
+# Linha 1: IPTU Arrecadado Anual (Dourado)
+fig_imp.add_trace(go.Scatter(
+    x=eixo_x_anos,
+    y=iptu_linha_anual,
+    mode="lines+markers",
+    name="IPTU Pago Anual (com Isenção)",
+    line=dict(color=GOLD, width=4, shape="spline"),
+    marker=dict(size=8, color=GOLD),
+    hovertemplate="%{x}<br>IPTU Pago: R$ %{y:,.0f}/ano<extra></extra>"
+))
+
+# Linha 2: Impostos Indiretos Anuais (Verde)
+fig_imp.add_trace(go.Scatter(
+    x=eixo_x_anos,
+    y=indireto_linha_anual,
+    mode="lines+markers",
+    name=label_indireto,
+    line=dict(color=VERDE, width=4, shape="spline"),
+    marker=dict(size=8, color=VERDE),
+    hovertemplate="%{x}<br>" + label_indireto + ": R$ %{y:,.0f}/ano<extra></extra>"
+))
+
+fig_imp.update_layout(
+    plot_bgcolor="#FFFFFF",
+    paper_bgcolor="#FFFFFF",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_DARK)),
+    margin=dict(l=5, r=5, t=10, b=10),
+    height=380,
+    xaxis=dict(tickfont=dict(color=TXT_DARK), showgrid=True, gridcolor="#F1F5F9"),
+    yaxis=dict(gridcolor="#E2E8F0", tickprefix="R$ ", tickfont=dict(color=TXT_DARK))
+)
+
+st.plotly_chart(fig_imp, use_container_width=True)
+st.caption("💡 **Análise de Balanço Fiscal:** No **Ano 0** (fase de obras), ambos partem do ponto zero R$ 0. Após o início da operação (Ano 1), os impostos indiretos (verde) passam a ser arrecadados anualmente, superando expressivamente a arrecadação de IPTU (dourado) durante toda a escada de incentivo.")
+
+st.write("")
+msg_info = "💡 **Fundamentação Técnica desta Trilha:** " + str(t["justificativa"])
+st.info(msg_info)
+
+# ============================================================
+# CAPÍTULO 6: JUSTIFICATIVA TÉCNICA DOS PRAZOS
+# ============================================================
+cap6_html = """
+<div class="capitulo-box">
+    <div class="capitulo-title">6. Justificativa Técnica dos Prazos</div>
+</div>
+"""
+st.markdown(cap6_html, unsafe_allow_html=True)
+
+df_just = pd.DataFrame({
+    "Trilha Setorial": [
+        "Varejo, Indústria e Logística",
+        "Saúde (Prazo de Obra)",
+        "Saúde (Ciclo Incremental)",
+        "Educação (Ciclo Incremental)",
+        "Educação (Fase Pós-Escada)",
+        "Habitação (Reviver Centro)"
+    ],
+    "Prazo Adotado": [
+        "6 anos",
+        "Até 5 anos",
+        "8 anos",
+        "6 anos",
+        "Desconto Permanente (30%)*",
+        "6 anos"
+    ],
+    "Fundamentação Técnica e Racional Econômico": [
+        "Retrofit comercial é rápido (6 a 18 meses). Seis anos de benefício inicial dá fôlego operacional frente ao e-commerce sem virar subsídio permanente.",
+        "Exigências regulatórias complexas da Anvisa (gases medicinais, subestação dedicada, fluxo sanitário) alongam genuinamente o período de obra sem geração de receita.",
+        "Ciclo de maturação longo: equipamentos de alta complexidade demandam alto investimento inicial, credenciamento em convênios e tempo de formação da carteira de pacientes.",
+        "Acompanha a lógica construtiva e de amortização do Varejo, cobrindo o período de implantação da instituição.",
+        "Muda de natureza após o Ano 10: deixa de ser recuperação de custo de obra e torna-se incentivo condicionado à manutenção contínua das notas de excelência no MEC.",
+        "Tempo médio de absorção do mercado imobiliário para comercialização das unidades residenciais na planta e consolidação do adensamento populacional."
+    ]
+})
