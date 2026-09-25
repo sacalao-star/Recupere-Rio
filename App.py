@@ -15,6 +15,8 @@ st.set_page_config(
 NAVY = "#1B3A5C"
 GOLD = "#B8892F"
 VERDE = "#15803D"
+AZUL_ROYAL = "#2563EB"
+ROXO = "#7C3AED"
 VERMELHO = "#B42318"
 TXT_DARK = "#0F172A"
 TXT_MUTED = "#475569"
@@ -193,6 +195,7 @@ TRILHAS = {
     "Varejo, Indústria e Logística": {
         "emoji": "🛒", "obra": 3, "escada": ESCADA_PADRAO,
         "emprego_m2": 25, "faturamento_m2": 6000,
+        "iss_pct": 0.02, "icms_pct": 0.03, "itbi_pct": 0.0,
         "extra": "Isenção de 3 anos em alvará, licenciamento e TCL.",
         "contrapartida": "Cota de contratação local pontua como critério no leilão saneado.",
         "justificativa": "Retrofit comercial rápido (6 a 18 meses). Seis anos dá fôlego frente ao e-commerce sem virar vantagem permanente.",
@@ -200,6 +203,7 @@ TRILHAS = {
     "Saúde": {
         "emoji": "🏥", "obra": 5, "escada": ESCADA_SAUDE,
         "emprego_m2": 20, "faturamento_m2": 8000,
+        "iss_pct": 0.04, "icms_pct": 0.01, "itbi_pct": 0.0,
         "extra": "Prazo de obra estendido de até 5 anos devido a normas da Anvisa.",
         "contrapartida": "10% da capacidade de exames e consultas para o SUS (Sisreg).",
         "justificativa": "Exigência da Anvisa (gases medicinais, subestação dedicada) alonga o prazo de obra. Retorno longo por equipamentos e convênios.",
@@ -207,6 +211,7 @@ TRILHAS = {
     "Educação": {
         "emoji": "🎓", "obra": 3, "escada": ESCADA_EDUCACAO,
         "emprego_m2": 45, "faturamento_m2": 3500,
+        "iss_pct": 0.045, "icms_pct": 0.005, "itbi_pct": 0.0,
         "extra": "Após o ano 10, desconto permanente de 30% sobre o IPTU total (revisado a cada 5 anos).",
         "contrapartida": "10% das vagas em bolsas de estudo integrais via CadÚnico.",
         "justificativa": "Muda de natureza após o ano 10: desconto condicionado à manutenção da nota no MEC.",
@@ -214,6 +219,7 @@ TRILHAS = {
     "Habitação": {
         "emoji": "🏠", "obra": 3, "escada": ESCADA_PADRAO,
         "emprego_m2": 200, "faturamento_m2": None,
+        "iss_pct": 0.0, "icms_pct": 0.0, "itbi_pct": 0.03,
         "extra": "20% de bônus de potencial construtivo adicional via Operação Interligada.",
         "contrapartida": "20% das unidades residenciais destinadas à Locação Social por 30 anos.",
         "justificativa": "Tempo de absorção do mercado para comercializar as unidades residenciais na planta (Reviver Centro).",
@@ -221,8 +227,6 @@ TRILHAS = {
 }
 
 ALIQUOTA_IPTU = 0.025          # 2,5% a.a.
-ALIQUOTA_INDIRETA = 0.05       # 5% ISS/ICMS
-ALIQUOTA_ITBI = 0.03           # 3% ITBI
 
 # ============================================================
 # 3. CABEÇALHO OFICIAL
@@ -454,6 +458,7 @@ RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):
     )
 
 # ============================================================
+# ============================================================
 # CAPÍTULO 5: IMPACTOS ECONÔMICOS PROJETADOS
 # ============================================================
 cap5_html = """
@@ -467,81 +472,116 @@ st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado �
 
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
-i1, i2, i3 = st.columns(3)
-with i1:
-    render_card(fmt_num(empregos_est), "Empregos estimados gerados", NAVY)
-
+# Cálculos de impostos específicos por trilha
 if t["faturamento_m2"] is not None:
     faturamento_est = tamanho_m2 * t["faturamento_m2"]
-    impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
+    iss_est = faturamento_est * t["iss_pct"]
+    icms_est = faturamento_est * t["icms_pct"]
+    itbi_est = 0
+    impostos_indiretos_totais = iss_est + icms_est
+    
+    i1, i2, i3 = st.columns(3)
+    with i1:
+        render_card(fmt_num(empregos_est), "Empregos estimados gerados", NAVY)
     with i2:
         render_card(fmt_moeda(faturamento_est), "Faturamento anual estimado", NAVY)
     with i3:
-        render_card(fmt_moeda(impostos_indiretos), "Impostos indiretos estimados/ano (ISS/ICMS via VAF)", NAVY)
+        render_card(fmt_moeda(impostos_indiretos_totais), "Impostos indiretos estimados/ano (ISS + ICMS)", NAVY)
 else:
     faturamento_est = 0
-    impostos_indiretos = 0
-    itbi_est = valor_venal * ALIQUOTA_ITBI
+    iss_est = 0
+    icms_est = 0
+    itbi_est = valor_venal * t["itbi_pct"]
+    impostos_indiretos_totais = itbi_est
+    
+    i1, i2, i3 = st.columns(3)
+    with i1:
+        render_card(fmt_num(empregos_est), "Empregos estimados gerados", NAVY)
     with i2:
         render_card(fmt_moeda(itbi_est), "ITBI estimado na comercialização (3%)", NAVY)
     with i3:
         render_card("—", "Habitação gera receita por ITBI e consumo local", TXT_MUTED)
 
-# --- GRÁFICO DE LINHAS 📈 PROJEÇÃO DO RETORNO FISCAL (ANO 0 ATÉ COBRANÇA INTEGRAL) ---
+# --- GRÁFICO DE LINHAS 📈 SEPARADO POR IMPOSTO (DO ANO 0 ATÉ A COBRANÇA INTEGRAL) ---
 st.write("")
-st.subheader("📈 Projeção do Retorno Fiscal Anual (do Ano 0 até a Cobrança Integral)")
+st.subheader("📈 Projeção Detalhada por Imposto (do Ano 0 até a Cobrança Integral)")
 
-# Construção da linha do tempo: Ano 0 (Início da Obra/Projeto) até o Ano final de transição
-# Ano 0: Imposto Indireto = 0, IPTU = 0 (Isenção de obra)
-# A partir do Ano 1 (Habite-se / Operação): Atividade inicia e gera imposto indireto anual. IPTU sobe gradualmente na escada.
+# Descobrir o ano em que o IPTU atinge a cobrança integral (100%)
+ano_integral = 11
+for a in anos:
+    if pct_para_ano(a, t["escada"]) == 100:
+        ano_integral = a
+        break
 
-eixo_x_anos = ["Ano 0"] + [f"Ano {a}" for a in anos]
-iptu_linha_anual = [0] + pagos
+# Eixo X do Ano 0 até o Ano de cobrança integral
+anos_projecao = list(range(0, ano_integral + 1))
+eixo_x = [f"Ano {a}" for a in anos_projecao]
 
-if t["faturamento_m2"] is not None:
-    indireto_linha_anual = [0] + [impostos_indiretos for _ in anos]
-    label_indireto = "Impostos Indiretos Anuais (ISS/ICMS)"
-else:
-    # Para Habitação, ITBI ocorre no Ano 1 de vendas
-    indireto_linha_anual = [0, itbi_est] + [0 for _ in range(len(anos) - 1)]
-    label_indireto = "Arrecadação de ITBI (Vendas)"
+# Linhas de valores por imposto
+iptu_proj = [0] + [pagos[a - 1] for a in range(1, ano_integral + 1)]
 
 fig_imp = go.Figure()
 
-# Linha 1: IPTU Arrecadado Anual (Dourado)
+# 1. Linha do IPTU Pago (Dourado)
 fig_imp.add_trace(go.Scatter(
-    x=eixo_x_anos,
-    y=iptu_linha_anual,
+    x=eixo_x,
+    y=iptu_proj,
     mode="lines+markers",
-    name="IPTU Pago Anual (com Isenção)",
+    name="IPTU Arrecadado (com Isenção)",
     line=dict(color=GOLD, width=4, shape="spline"),
     marker=dict(size=8, color=GOLD),
     hovertemplate="%{x}<br>IPTU Pago: R$ %{y:,.0f}/ano<extra></extra>"
 ))
 
-# Linha 2: Impostos Indiretos Anuais (Verde)
-fig_imp.add_trace(go.Scatter(
-    x=eixo_x_anos,
-    y=indireto_linha_anual,
-    mode="lines+markers",
-    name=label_indireto,
-    line=dict(color=VERDE, width=4, shape="spline"),
-    marker=dict(size=8, color=VERDE),
-    hovertemplate="%{x}<br>" + label_indireto + ": R$ %{y:,.0f}/ano<extra></extra>"
-))
+if t["faturamento_m2"] is not None:
+    # 2. Linha do ISS (Azul Royal)
+    iss_proj = [0] + [iss_est for _ in range(1, ano_integral + 1)]
+    fig_imp.add_trace(go.Scatter(
+        x=eixo_x,
+        y=iss_proj,
+        mode="lines+markers",
+        name="ISS (Imposto Sobre Serviços)",
+        line=dict(color=AZUL_ROYAL, width=4, shape="spline"),
+        marker=dict(size=8, color=AZUL_ROYAL),
+        hovertemplate="%{x}<br>ISS: R$ %{y:,.0f}/ano<extra></extra>"
+    ))
+
+    # 3. Linha do ICMS (Verde)
+    icms_proj = [0] + [icms_est for _ in range(1, ano_integral + 1)]
+    fig_imp.add_trace(go.Scatter(
+        x=eixo_x,
+        y=icms_proj,
+        mode="lines+markers",
+        name="ICMS (Retorno de VAF)",
+        line=dict(color=VERDE, width=4, shape="spline"),
+        marker=dict(size=8, color=VERDE),
+        hovertemplate="%{x}<br>ICMS (VAF): R$ %{y:,.0f}/ano<extra></extra>"
+    ))
+else:
+    # Trilha Habitação: Linha do ITBI (no Ano 1 da venda)
+    itbi_proj = [0, itbi_est] + [0 for _ in range(2, ano_integral + 1)]
+    fig_imp.add_trace(go.Scatter(
+        x=eixo_x,
+        y=itbi_proj,
+        mode="lines+markers",
+        name="ITBI (Comercialização Inicial)",
+        line=dict(color=VERDE, width=4, shape="spline"),
+        marker=dict(size=8, color=VERDE),
+        hovertemplate="%{x}<br>ITBI: R$ %{y:,.0f}<extra></extra>"
+    ))
 
 fig_imp.update_layout(
     plot_bgcolor="#FFFFFF",
     paper_bgcolor="#FFFFFF",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_DARK)),
     margin=dict(l=5, r=5, t=10, b=10),
-    height=380,
+    height=400,
     xaxis=dict(tickfont=dict(color=TXT_DARK), showgrid=True, gridcolor="#F1F5F9"),
     yaxis=dict(gridcolor="#E2E8F0", tickprefix="R$ ", tickfont=dict(color=TXT_DARK))
 )
 
 st.plotly_chart(fig_imp, use_container_width=True)
-st.caption("💡 **Análise de Balanço Fiscal:** No **Ano 0** (fase de obras), ambos partem do ponto zero R$ 0. Após o início da operação (Ano 1), os impostos indiretos (verde) passam a ser arrecadados anualmente, superando expressivamente a arrecadação de IPTU (dourado) durante toda a escada de incentivo.")
+st.caption(f"💡 **Análise de Balanço Fiscal:** No **Ano 0** (fase de reformas), todas as arrecadações partem do ponto zero R$ 0. A partir do **Ano 1** (operação), os tributos indiretos entram em vigor de forma contínua, enquanto o **IPTU (linha dourada)** evolui gradualmente até atingir a cobrança integral (100%) no **Ano {ano_integral}**.")
 
 st.write("")
 msg_info = "💡 **Fundamentação Técnica desta Trilha:** " + str(t["justificativa"])
