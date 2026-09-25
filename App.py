@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ---- Paleta de Cores Institucionais de Alto Contraste ----
+# ---- Paleta de Cores Institucionais ----
 NAVY = "#1B3A5C"
 GOLD = "#B8892F"
 VERDE = "#15803D"
@@ -197,28 +197,28 @@ TRILHAS = {
         "emprego_m2": 25, "faturamento_m2": 6000,
         "extra": "Isenção de 3 anos em alvará, licenciamento e TCL.",
         "contrapartida": "Cota de contratação local pontua como critério no leilão saneado.",
-        "justificativa": "Retrofit comercial é rápido (6 a 18 meses de obra) e a receita amadurece logo após abrir. Seis anos dá fôlego frente ao e-commerce sem virar vantagem permanente.",
+        "justificativa": "Retrofit comercial rápido. Seis anos dá fôlego frente ao e-commerce.",
     },
     "Saúde": {
         "emoji": "🏥", "obra": 5, "escada": ESCADA_SAUDE,
         "emprego_m2": 20, "faturamento_m2": 8000,
-        "extra": "Prazo de obra estendido de até 5 anos devido a exigências regulatórias da Anvisa.",
-        "contrapartida": "10% da capacidade de exames de alta complexidade e consultas para o SUS (Sisreg).",
-        "justificativa": "Exigência da Anvisa (gases medicinais, subestação dedicada) alonga genuinamente o prazo de obra. O retorno é mais longo por conta dos equipamentos e credenciamento de convênios.",
+        "extra": "Obra de até 5 anos devido a normas da Anvisa.",
+        "contrapartida": "10% da capacidade de exames/consultas para o SUS.",
+        "justificativa": "Exigências da Anvisa alongam o prazo de obra. Retorno longo por equipamentos.",
     },
     "Educação": {
         "emoji": "🎓", "obra": 3, "escada": ESCADA_EDUCACAO,
         "emprego_m2": 45, "faturamento_m2": 3500,
-        "extra": "Após o ano 10, desconto fixo permanente de 30% sobre o IPTU total (revisado a cada 5 anos).",
-        "contrapartida": "10% das vagas em bolsas de estudo integrais via CadÚnico.",
-        "justificativa": "Muda de natureza após o ano 10: deixa de ser sobre recuperar custo de obra e passa a desconto condicionado à manutenção da nota no MEC.",
+        "extra": "Após ano 10, desconto permanente de 30% no IPTU.",
+        "contrapartida": "10% de bolsas de estudo integrais via CadÚnico.",
+        "justificativa": "Desconto condicionado à manutenção da nota no MEC.",
     },
     "Habitação": {
         "emoji": "🏠", "obra": 3, "escada": ESCADA_PADRAO,
         "emprego_m2": 200, "faturamento_m2": None,
-        "extra": "20% de bônus de potencial construtivo adicional via Operação Interligada.",
-        "contrapartida": "20% das unidades residenciais destinadas à Locação Social por 30 anos.",
-        "justificativa": "Não é sobre tempo de obra — é sobre o tempo de absorção do mercado para comercializar as unidades residenciais na planta (Reviver Centro).",
+        "extra": "20% de bônus de potencial construtivo adicional.",
+        "contrapartida": "20% das unidades destinadas à Locação Social por 30 anos.",
+        "justificativa": "Tempo de absorção do mercado para comercializar unidades na planta.",
     },
 }
 
@@ -231,9 +231,9 @@ ALIQUOTA_ITBI = 0.03           # 3% ITBI
 # ============================================================
 gov_badge_html = """
 <div class="gov-badge">
-    <div class="gov-header-top">Prefeitura da Cidade do Rio de Janeiro · Reconversão Funcional de Ativos</div>
+    <div class="gov-header-top">Prefeitura do Rio de Janeiro · Reconversão Funcional</div>
     <div class="main-title">PROJETO RECUPERE RIO</div>
-    <div class="sub-title">Simulador de Trilhas Setoriais, Incentivo Fiscal e Impacto Econômico</div>
+    <div class="sub-title">Simulador de Trilhas Setoriais e Impacto Econômico</div>
     <div class="proto-tag">🛠️ Simulação técnica em desenvolvimento — sem caráter oficial</div>
 </div>
 """
@@ -250,15 +250,15 @@ cap1_html = """
 st.markdown(cap1_html, unsafe_allow_html=True)
 
 with st.expander("1.1 Teste de Enquadramento Funcional (Regra 70/50)", expanded=True):
-    st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
+    st.write("Exige mínimo de 70% da área e 50% do faturamento na atividade setorial declarada.")
 with st.expander("1.2 Lista de Exclusão Fechada"):
-    st.write("Vedados em qualquer trilha: estacionamentos rotativos puros, depósitos de sucata/ferro-velho, templos religiosos, sedes partidárias e painéis publicitários.")
+    st.write("Vedados: estacionamentos rotativos, depósitos de sucata, templos, sedes partidárias e outdoors.")
 with st.expander("1.3 Certificação Anual e Reversão Automática"):
-    st.write("A Prefeitura tem direito de vistoria sem aviso prévio. Constatado descumprimento, o benefício é cassado e cobrado como Dívida Ativa, corrigido por IPCA-E.")
+    st.write("Descumprimento acarreta cassação do benefício e cobrança na Dívida Ativa com IPCA-E.")
 with st.expander("1.4 Gatilho de Revisão Quinquenal"):
-    st.write("Nenhum incentivo opera em caráter perpétuo. Todos os descontos são auditados a cada 5 anos.")
+    st.write("Todos os descontos e incentivos são auditados a cada 5 anos.")
 with st.expander("1.5 Fundamentação Quantitativa por Custo de Instalação"):
-    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de instalação por m² e ciclo de maturação de cada setor.")
+    st.write("Prazos respaldados por levantamento do custo de instalação por m².")
 
 # ============================================================
 # CAPÍTULO 2: FLUXO DO INSTRUMENTO
@@ -269,28 +269,23 @@ cap2_html = """
 </div>
 """
 st.markdown(cap2_html, unsafe_allow_html=True)
-st.caption("👇 Toque em qualquer uma das etapas para ver o detalhamento técnico do processo:")
+st.caption("👇 Toque nas etapas abaixo para expandir o detalhamento:")
 
 col_f1, col_f2 = st.columns(2)
 
 with col_f1:
     with st.expander("📄 **1. Notificação** *(IPTU Progressivo)*", expanded=False):
-        st.write("**O que acontece:** O imóvel subutilizado ou abandonado é notificado pela Prefeitura.")
-        st.write("**Prazo:** 6 meses para apresentação de projeto ou início de atividade.")
-        st.write("**Consequência:** Aplicação de alíquotas progressivas de IPTU em caso de inércia.")
+        st.write("Notificação do imóvel com prazo de 6 meses para apresentação do projeto.")
 
     with st.expander("🔨 **2. Leilão Saneado** *(Aquisição do Ativo)*", expanded=False):
-        st.write("**O que acontece:** O imóvel é levado a leilão público com perdão/saneamento das dívidas tributárias anteriores.")
-        st.write("**Vantagem:** O investidor adquire o ativo sem o passivo fiscal histórico.")
+        st.write("Leilão público com perdoamento de dívidas tributárias anteriores.")
 
 with col_f2:
-    with st.expander("💻 **3. Seleção da Trilha** *(No Sistema Reconverte)*", expanded=False):
-        st.write("**O que acontece:** Ao arrematar, o investidor cadastra o projeto e seleciona a trilha setorial adequada.")
-        st.write("**Regra:** Vinculação automática às regras de contrapartida e prazos de isenção durante a obra.")
+    with st.expander("💻 **3. Seleção da Trilha** *(Sistema Reconverte)*", expanded=False):
+        st.write("Cadastro do projeto com vinculação automática às regras da trilha.")
 
-    with st.expander("📈 **4. Escada de Isenção** *(Início Pós-Habite-se)*", expanded=False):
-        st.write("**O que acontece:** A concessão do Habite-se dispara a contagem da escada de benefícios (Anos 1 a 13).")
-        st.write("**Acompanhamento:** Vistoria anual da regra 70/50 para manutenção dos descontos.")
+    with st.expander("📈 **4. Escada de Isenção** *(Pós-Habite-se)*", expanded=False):
+        st.write("Início da contagem da escada tributária após concessão do Habite-se.")
 
 # ============================================================
 # CAPÍTULO 3: MATRIZ DE TRILHAS SETORIAIS
@@ -301,8 +296,6 @@ cap3_html = """
 </div>
 """
 st.markdown(cap3_html, unsafe_allow_html=True)
-
-st.write("Escolha uma trilha abaixo para visualizar as diretrizes e contrapartidas completas:")
 
 trilha_matriz_sel = st.radio(
     "Selecione a trilha para detalhamento:",
@@ -320,18 +313,18 @@ card_matriz_html = f"""
     </div>
     <div class="trilha-item-box">
         <div class="trilha-item-label">🏗️ Isenção na Obra</div>
-        <div class="trilha-item-value">Até {d_matriz['obra']} anos de isenção total durante o período de reformas.</div>
+        <div class="trilha-item-value">Até {d_matriz['obra']} anos de isenção total durante reformas.</div>
     </div>
     <div class="trilha-item-box">
         <div class="trilha-item-label">📉 Isenção Total pós-Habite-se</div>
-        <div class="trilha-item-value">{d_matriz['escada'][0][0]} anos com 100% de isenção de IPTU após a conclusão da obra.</div>
+        <div class="trilha-item-value">{d_matriz['escada'][0][0]} anos com 100% de isenção de IPTU pós-obra.</div>
     </div>
     <div class="trilha-item-box">
         <div class="trilha-item-label">🎁 Benefício Extra</div>
         <div class="trilha-item-value">{d_matriz['extra']}</div>
     </div>
     <div class="trilha-item-box">
-        <div class="trilha-item-label">🤝 Contrapartida Social Obrigatória</div>
+        <div class="trilha-item-label">🤝 Contrapartida Social</div>
         <div class="trilha-item-value">{d_matriz['contrapartida']}</div>
     </div>
 </div>
@@ -360,7 +353,7 @@ t = TRILHAS[trilha_sel]
 valor_venal = tamanho_m2 * valor_m2
 iptu_integral = valor_venal * ALIQUOTA_IPTU
 
-info_line_html = f'<div class="info-line">📐 Valor venal calculado: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; IPTU integral anual (2,5%): <b>{fmt_moeda(iptu_integral)}</b> &nbsp;·&nbsp; Isenção na obra: <b>até {t["obra"]} anos</b> (antes da escada iniciar no Habite-se).</div>'
+info_line_html = f'<div class="info-line">📐 Valor venal: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; IPTU integral/ano: <b>{fmt_moeda(iptu_integral)}</b> &nbsp;·&nbsp; Isenção obra: <b>até {t["obra"]} anos</b>.</div>'
 st.markdown(info_line_html, unsafe_allow_html=True)
 st.write("")
 
@@ -416,24 +409,15 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
-st.caption("💡 **Como ler o gráfico:** A altura total de cada barra é o IPTU cheio. A parte **dourada** é o que o investidor paga e a parte **verde** é o dinheiro economizado pelo programa.")
 
 relatorio_lines = [
-    "PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA",
-    "------------------------------------------------------------",
-    f"Trilha Setorial: {trilha_sel}",
-    f"Área Construída: {fmt_num(tamanho_m2)} m²",
-    f"Valor por m²: {fmt_moeda(valor_m2)}",
-    f"Valor Venal Calculado: {fmt_moeda(valor_venal)}",
-    f"IPTU Integral Anual (2,5%): {fmt_moeda(iptu_integral)}",
-    "",
-    "RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):",
-    "------------------------------------------------------------",
-    f"- Valor Total Pago com Benefício: {fmt_moeda(tot_pago)}",
-    f"- Economia Total Gerada: {fmt_moeda(tot_econ)}",
-    f"- Custo sem Programa (IPTU Cheio): {fmt_moeda(tot_sem)}",
-    "",
-    "* Simulação técnica em desenvolvimento — sem caráter oficial."
+    "PROJETO RECUPERE RIO — SIMULAÇÃO TÉCNICA",
+    f"Trilha: {trilha_sel}",
+    f"Área: {fmt_num(tamanho_m2)} m² | Valor/m²: {fmt_moeda(valor_m2)}",
+    f"Valor Venal: {fmt_moeda(valor_venal)} | IPTU Anual: {fmt_moeda(iptu_integral)}",
+    f"Total Pago (13 Anos): {fmt_moeda(tot_pago)}",
+    f"Economia Gerada: {fmt_moeda(tot_econ)}",
+    f"Custo Sem Benefício: {fmt_moeda(tot_sem)}"
 ]
 relatorio_txt = "\n".join(relatorio_lines)
 
@@ -444,16 +428,16 @@ with col_exp1:
             "Ano": [f"Ano {a}" for a in anos],
             "Cobrança (%)": [f"{pct_para_ano(a, t['escada'])}%" for a in anos],
             "IPTU Pago": [fmt_moeda(v) for v in pagos],
-            "Sem Benefício (Cheio)": [fmt_moeda(v) for v in sem_beneficio],
-            "Economia Gerada": [fmt_moeda(v) for v in economias],
+            "Sem Benefício": [fmt_moeda(v) for v in sem_beneficio],
+            "Economia": [fmt_moeda(v) for v in economias],
         })
         st.dataframe(df, hide_index=True, use_container_width=True)
 
 with col_exp2:
     st.download_button(
-        label="📥 Baixar Simulação (.txt)",
+        label="📥 Baixar (.txt)",
         data=relatorio_txt,
-        file_name=f"simulacao_recupere_rio_{trilha_sel.lower().replace(' ', '_')}.txt",
+        file_name="simulacao_recupere_rio.txt",
         mime="text/plain",
         use_container_width=True
     )
@@ -468,8 +452,6 @@ cap5_html = """
 """
 st.markdown(cap5_html, unsafe_allow_html=True)
 
-st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial de arrecadação. O coeficiente de emprego do Varejo toma como referência o setor de shopping centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
-
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
 i1, i2, i3 = st.columns(3)
@@ -482,12 +464,104 @@ if t["faturamento_m2"] is not None:
     with i2:
         render_card(fmt_moeda(faturamento_est), "Faturamento anual estimado", NAVY)
     with i3:
-        render_card(fmt_moeda(impostos_indiretos), "Impostos indiretos estimados/ano (ISS/ICMS via VAF)", NAVY)
+        render_card(fmt_moeda(impostos_indiretos), "Impostos indiretos estimados/ano", NAVY)
 else:
     faturamento_est = 0
     impostos_indiretos = 0
     itbi_est = valor_venal * ALIQUOTA_ITBI
     with i2:
-        render_card(fmt_moeda(itbi_est), "ITBI estimado na comercialização (3%)", NAVY)
+        render_card(fmt_moeda(itbi_est), "ITBI estimado (3%)", NAVY)
     with i3:
-        render_card("—", "Habitação gera receita por ITBI e consu
+        render_card("—", "Receita por ITBI e consumo local", TXT_MUTED)
+
+# --- GRÁFICO DE LINHAS 📈 PROJEÇÃO DO RETORNO FISCAL ---
+st.write("")
+st.subheader("📈 Projeção do Retorno Fiscal (de 3 em 3 anos)")
+
+periodos = ["Anos 1–3", "Anos 4–6", "Anos 7–9", "Anos 10–12", "Ano 13"]
+iptu_periodos = [
+    sum(pagos[0:3]),
+    sum(pagos[3:6]),
+    sum(pagos[6:9]),
+    sum(pagos[9:12]),
+    sum(pagos[12:13])
+]
+
+if t["faturamento_m2"] is not None:
+    indiretos_periodos = [
+        impostos_indiretos * 3,
+        impostos_indiretos * 3,
+        impostos_indiretos * 3,
+        impostos_indiretos * 3,
+        impostos_indiretos * 1
+    ]
+    label_indireto = "Impostos Indiretos (ISS/ICMS)"
+else:
+    indiretos_periodos = [
+        itbi_est,
+        0,
+        0,
+        0,
+        0
+    ]
+    label_indireto = "Arrecadação ITBI"
+
+fig_imp = go.Figure()
+
+# Linha 1: IPTU Arrecadado
+fig_imp.add_trace(go.Scatter(
+    x=periodos,
+    y=iptu_periodos,
+    mode="lines+markers",
+    name="IPTU Arrecadado (com Isenção)",
+    line=dict(color=GOLD, width=4, shape="spline"),
+    marker=dict(size=10, color=GOLD),
+    hovertemplate="%{x}<br>IPTU: R$ %{y:,.0f}<extra></extra>"
+))
+
+# Linha 2: Impostos Indiretos
+fig_imp.add_trace(go.Scatter(
+    x=periodos,
+    y=indiretos_periodos,
+    mode="lines+markers",
+    name=label_indireto,
+    line=dict(color=VERDE, width=4, shape="spline"),
+    marker=dict(size=10, color=VERDE),
+    hovertemplate="%{x}<br>Indiretos: R$ %{y:,.0f}<extra></extra>"
+))
+
+fig_imp.update_layout(
+    plot_bgcolor="#FFFFFF",
+    paper_bgcolor="#FFFFFF",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_DARK)),
+    margin=dict(l=5, r=5, t=10, b=10),
+    height=360,
+    xaxis=dict(tickfont=dict(color=TXT_DARK), showgrid=True, gridcolor="#F1F5F9"),
+    yaxis=dict(gridcolor="#E2E8F0", tickprefix="R$ ", tickfont=dict(color=TXT_DARK))
+)
+
+st.plotly_chart(fig_imp, use_container_width=True)
+
+st.write("")
+st.info("💡 **Fundamentação Técnica desta Trilha:** " + str(t["justificativa"]))
+
+# ============================================================
+# CAPÍTULO 6: JUSTIFICATIVA TÉCNICA DOS PRAZOS
+# ============================================================
+cap6_html = """
+<div class="capitulo-box">
+    <div class="capitulo-title">6. Justificativa Técnica dos Prazos</div>
+</div>
+"""
+st.markdown(cap6_html, unsafe_allow_html=True)
+
+df_just = pd.DataFrame({
+    "Trilha": ["Varejo / Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação", "Habitação"],
+    "Prazo Adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos + perm.", "6 anos"],
+    "Fundamentação Técnica": [
+        "Retrofit comercial rápido.",
+        "Exigências da Anvisa alongam o prazo de reforma sem faturamento.",
+        "Equipamentos de alto custo e ciclo longo de credenciamento.",
+        "Desconto permanente condicionado ao desempenho no MEC.",
+        "Tempo de absorção do mercado imobiliário para vendas na planta."
+    ],
