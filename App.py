@@ -55,7 +55,7 @@ col1, col2, col3, col4 = st.columns(4)
 col1.success("📄 1. Notificação\n(IPTU progressivo, 6 meses)")
 col2.warning("🔨 2. Leilão saneado")
 col3.info("💻 3. Seleção da trilha no sistema")
-col4.primary("📈 4. Escada de isenção pós-Habite-se")
+col4.success("📈 4. Escada de isenção pós-Habite-se")
 
 st.caption("Ao arrematar o imóvel no leilão saneado, o investidor seleciona a trilha setorial de destinação no sistema Reconverte...")
 st.divider()
