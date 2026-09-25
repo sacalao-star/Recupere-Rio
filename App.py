@@ -490,4 +490,4 @@ else:
     with i3:
         render_card("—", "Habitação gera receita por ITBI e consumo local", TXT_MUTED)
 
-st.write("") msg_info = "💡 
+st.write("")
