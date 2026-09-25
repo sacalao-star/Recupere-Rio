@@ -37,7 +37,7 @@ st.markdown(f"""
         color: {TXT_DARK} !important;
     }}
 
-    /* FIX DEFINITIVO PARA DROPDOWNS / SELECTBOX (OPÇÕES TOTALMENTE VISÍVEIS) */
+    /* FIX DEFINITIVO PARA DROPDOWNS / SELECTBOX */
     div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {{
         background-color: #FFFFFF !important;
         border: 2px solid {NAVY} !important;
@@ -291,7 +291,7 @@ with col_f2:
         st.write("**Acompanhamento:** Vistoria anual da regra 70/50 para manutenção dos descontos.")
 
 # ============================================================
-# CAPÍTULO 3: MATRIZ DE TRILHAS SETORIAIS (REFORMULADO E DESTACADO)
+# CAPÍTULO 3: MATRIZ DE TRILHAS SETORIAIS
 # ============================================================
 st.markdown("""
 <div class="capitulo-box">
@@ -299,9 +299,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.write("Escolha uma trilha abaixo para visualizar as diretrizes e contrapartidas completas (sem texto cortado):")
+st.write("Escolha uma trilha abaixo para visualizar as diretrizes e contrapartidas completas:")
 
-# Seletor de Trilhas em Destaque
 trilha_matriz_sel = st.radio(
     "Selecione a trilha para detalhamento:",
     options=list(TRILHAS.keys()),
@@ -311,28 +310,23 @@ trilha_matriz_sel = st.radio(
 
 d_matriz = TRILHAS[trilha_matriz_sel]
 
-# Exibição da Matriz em Cartões Verticais de Largura Total
 st.markdown(f"""
 <div class="trilha-card-container">
     <div style="color: #1B3A5C; font-size: 20px; font-weight: 800; margin-bottom: 15px;">
         {d_matriz['emoji']} {trilha_matriz_sel}
     </div>
-    
     <div class="trilha-item-box">
         <div class="trilha-item-label">🏗️ Isenção na Obra</div>
         <div class="trilha-item-value">Até {d_matriz['obra']} anos de isenção total durante o período de reformas.</div>
     </div>
-    
     <div class="trilha-item-box">
         <div class="trilha-item-label">📉 Isenção Total pós-Habite-se</div>
         <div class="trilha-item-value">{d_matriz['escada'][0][0]} anos com 100% de isenção de IPTU após a conclusão da obra.</div>
     </div>
-    
     <div class="trilha-item-box">
         <div class="trilha-item-label">🎁 Benefício Extra</div>
         <div class="trilha-item-value">{d_matriz['extra']}</div>
     </div>
-    
     <div class="trilha-item-box">
         <div class="trilha-item-label">🤝 Contrapartida Social Obrigatória</div>
         <div class="trilha-item-value">{d_matriz['contrapartida']}</div>
@@ -362,7 +356,7 @@ valor_venal = tamanho_m2 * valor_m2
 iptu_integral = valor_venal * ALIQUOTA_IPTU
 
 st.markdown(
-    f'<div class="info-line">📐 Valor venal calculado: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; '
+    f'<div class="info-line">📐 Valor venal calculated: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; '
     f'IPTU integral anual (2,5%): <b>{fmt_moeda(iptu_integral)}</b> &nbsp;·&nbsp; '
     f'Isenção na obra: <b>até {t["obra"]} anos</b> (antes da escada iniciar no Habite-se).</div>', 
     unsafe_allow_html=True
@@ -381,17 +375,13 @@ for ano in anos:
 tot_pago, tot_sem, tot_econ = sum(pagos), sum(sem_beneficio), sum(economias)
 
 m1, m2, m3 = st.columns(3)
-m1.markdown(f'<div class="metric-card" style="border-color:{GOLD};"><div class="metric-val" style="color:{GOLD}">{fmt_moeda(tot_pago)}</div>'
-            f'<div class="metric-lbl">Pago em 13 anos</div></div>', unsafe_allow_html=True)
-m2.markdown(f'<div class="metric-card" style="border-color:{VERDE};"><div class="metric-val" style="color:{VERDE}">{fmt_moeda(tot_econ)}</div>'
-            f'<div class="metric-lbl">Economia vs. cobrança cheia</div></div>', unsafe_allow_html=True)
-m3.markdown(f'<div class="metric-card" style="border-color:{VERMELHO};"><div class="metric-val" style="color:{VERMELHO}">{fmt_moeda(tot_sem)}</div>'
-            f'<div class="metric-lbl">Quanto pagaria sem o programa</div></div>', unsafe_allow_html=True)
+m1.markdown(f'<div class="metric-card" style="border-color:{GOLD};"><div class="metric-val" style="color:{GOLD}">{fmt_moeda(tot_pago)}</div><div class="metric-lbl">Pago em 13 anos</div></div>', unsafe_allow_html=True)
+m2.markdown(f'<div class="metric-card" style="border-color:{VERDE};"><div class="metric-val" style="color:{VERDE}">{fmt_moeda(tot_econ)}</div><div class="metric-lbl">Economia vs. cobrança cheia</div></div>', unsafe_allow_html=True)
+m3.markdown(f'<div class="metric-card" style="border-color:{VERMELHO};"><div class="metric-val" style="color:{VERMELHO}">{fmt_moeda(tot_sem)}</div><div class="metric-lbl">Quanto pagaria sem o programa</div></div>', unsafe_allow_html=True)
 
 st.write("")
 st.subheader("📊 Comparativo Anual de Cobrança (R$)")
 
-# GRÁFICO EMPILHADO (STACKED BAR) - LIMPÍSSIMO PARA TELEMÓVEL
 fig = go.Figure()
 
 fig.add_bar(
@@ -424,7 +414,6 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 st.caption("💡 **Como ler o gráfico:** A altura total de cada barra é o IPTU cheio. A parte **dourada** é o que o investidor paga e a parte **verde** é o dinheiro economizado pelo programa.")
 
-# Botão de Exportar
 relatorio_txt = f"""PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA
 ------------------------------------------------------------
 Trilha Setorial: {trilha_sel}
@@ -478,4 +467,9 @@ st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado �
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
 i1, i2, i3 = st.columns(3)
-i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est
+i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est)}</div><div class="metric-lbl">Empregos estimados gerados</div></div>', unsafe_allow_html=True)
+
+if t["faturamento_m2"] is not None:
+    faturamento_est = tamanho_m2 * t["faturamento_m2"]
+    impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
+    i2.markdown(f'<div class="metric-card"><div class="metric-val"
