@@ -418,24 +418,19 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 st.caption("💡 **Como ler o gráfico:** A altura total de cada barra é o IPTU cheio. A parte **dourada** é o que o investidor paga e a parte **verde** é o dinheiro economizado pelo programa.")
 
-relatorio_lines = [
-    "PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA",
-    "------------------------------------------------------------",
-    f"Trilha Setorial: {trilha_sel}",
-    f"Área Construída: {fmt_num(tamanho_m2)} m²",
-    f"Valor por m²: {fmt_moeda(valor_m2)}",
-    f"Valor Venal Calculado: {fmt_moeda(valor_venal)}",
-    f"IPTU Integral Anual (2,5%): {fmt_moeda(iptu_integral)}",
-    "",
-    "RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):",
-    "------------------------------------------------------------",
-    f"- Valor Total Pago com Benefício: {fmt_moeda(tot_pago)}",
-    f"- Economia Total Gerada: {fmt_moeda(tot_econ)}",
-    f"- Custo sem Programa (IPTU Cheio): {fmt_moeda(tot_sem)}",
-    "",
-    "* Simulação técnica em desenvolvimento — sem caráter oficial."
-]
-relatorio_txt = "\n".join(relatorio_lines)
+relatorio_txt = "PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA\n"
+relatorio_txt += "------------------------------------------------------------\n"
+relatorio_txt += "Trilha Setorial: " + str(trilha_sel) + "\n"
+relatorio_txt += "Área Construída: " + str(fmt_num(tamanho_m2)) + " m²\n"
+relatorio_txt += "Valor por m²: " + str(fmt_moeda(valor_m2)) + "\n"
+relatorio_txt += "Valor Venal Calculado: " + str(fmt_moeda(valor_venal)) + "\n"
+relatorio_txt += "IPTU Integral Anual (2,5%): " + str(fmt_moeda(iptu_integral)) + "\n\n"
+relatorio_txt += "RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):\n"
+relatorio_txt += "------------------------------------------------------------\n"
+relatorio_txt += "- Valor Total Pago com Benefício: " + str(fmt_moeda(tot_pago)) + "\n"
+relatorio_txt += "- Economia Total Gerada: " + str(fmt_moeda(tot_econ)) + "\n"
+relatorio_txt += "- Custo sem Programa (IPTU Cheio): " + str(fmt_moeda(tot_sem)) + "\n\n"
+relatorio_txt += "* Simulação técnica em desenvolvimento — sem caráter oficial.\n"
 
 col_exp1, col_exp2 = st.columns([3, 1])
 with col_exp1:
@@ -484,10 +479,6 @@ if t["faturamento_m2"] is not None:
     with i3:
         render_card(fmt_moeda(impostos_indiretos), "Impostos indiretos estimados/ano (ISS/ICMS via VAF)", NAVY)
 else:
-    itbi_est = valor_venal * ALIQUOTA_ITBI
-    with i2:
-        render_card(fmt_moeda(itbi_est), "ITBI estimado na comercialização (3%)", NAVY)
-    with i3:
-        render_card("—", "Habitação gera receita por ITBI e consumo local", TXT_MUTED)
-
-st.write("")
+    faturamento_est = 0
+    impostos_indiretos = 0
+    itbi_est = valor_venal * ALIQUOTA
