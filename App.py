@@ -555,7 +555,7 @@ cap6_html = """
 """
 st.markdown(cap6_html, unsafe_allow_html=True)
 
-df_just = pd.DataFrame({
+df_just = pd.DataFrame({ )
     "Trilha": ["Varejo / Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação", "Habitação"],
     "Prazo Adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos + perm.", "6 anos"],
     "Fundamentação Técnica": [
@@ -564,4 +564,4 @@ df_just = pd.DataFrame({
         "Equipamentos de alto custo e ciclo longo de credenciamento.",
         "Desconto permanente condicionado ao desempenho no MEC.",
         "Tempo de absorção do mercado imobiliário para vendas na planta."
-    ],
+    
