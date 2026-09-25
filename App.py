@@ -21,23 +21,19 @@ TXT_MUTED = "#475569"
 BORDER_COLOR = "#CBD5E1"
 BG_CARD = "#F8FAFC"
 
-st.markdown("""
+css_code = """
     <style>
-    /* Força Fundo Branco Global */
     .stApp {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
     
-    /* Oculta Sidebar completamente */
     [data-testid="stSidebar"] { display: none !important; }
 
-    /* Correção Global de Cores de Texto */
     p, span, div, label, h1, h2, h3, h4, h5, h6, li {
         color: #0F172A !important;
     }
 
-    /* FIX DEFINITIVO PARA DROPDOWNS / SELECTBOX */
     div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {
         background-color: #FFFFFF !important;
         border: 2px solid #1B3A5C !important;
@@ -70,7 +66,6 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* CAPÍTULOS DESTAQUE E CENTRALIZADOS */
     .capitulo-box {
         text-align: center;
         background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
@@ -91,7 +86,6 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* CABEÇALHO OFICIAL */
     .gov-badge {
         background: linear-gradient(135deg, #002147 0%, #244B72 100%);
         border: 1.5px solid #B8892F;
@@ -113,7 +107,6 @@ st.markdown("""
         padding: 4px 12px; border-radius: 20px;
     }
 
-    /* CARTÕES DA MATRIZ SETORIAL (SEÇÃO 3) */
     .trilha-card-container {
         background-color: #F8FAFC;
         border: 1.5px solid #CBD5E1;
@@ -143,7 +136,6 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* CARTÕES DE MÉTRICA DO SIMULADOR */
     .metric-card {
         background: #F8FAFC; border-radius: 10px; padding: 14px; text-align: center;
         border: 1.5px solid #CBD5E1; margin-bottom: 10px;
@@ -151,7 +143,6 @@ st.markdown("""
     .metric-val { font-size: 23px; font-weight: 800; }
     .metric-lbl { color: #475569 !important; font-size: 12px; font-weight: 600; margin-top: 3px; }
 
-    /* LINHA INFORMATIVA */
     .info-line {
         background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 8px;
         padding: 12px 16px; font-size: 13.5px; color: #1B3A5C !important; margin-top: 10px;
@@ -163,26 +154,27 @@ st.markdown("""
         border-radius: 8px !important;
     }
     </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(css_code, unsafe_allow_html=True)
 
 
 def fmt_moeda(val):
-    if val is None: return "R$ 0"
+    if val is None:
+        return "R$ 0"
     v = round(val)
-    return f"R$ {v:,.0f}".replace(",", ".")
+    return "R$ " + f"{v:,.0f}".replace(",", ".")
 
 
 def fmt_num(val):
-    if val is None: return "0"
+    if val is None:
+        return "0"
     v = round(val)
     return f"{v:,.0f}".replace(",", ".")
 
 
 def render_card(valor, legenda, cor="#1B3A5C"):
-    st.markdown(
-        f'<div class="metric-card"><div class="metric-val" style="color:{cor};">{valor}</div><div class="metric-lbl">{legenda}</div></div>',
-        unsafe_allow_html=True
-    )
+    html = f'<div class="metric-card"><div class="metric-val" style="color:{cor};">{valor}</div><div class="metric-lbl">{legenda}</div></div>'
+    st.markdown(html, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -237,23 +229,25 @@ ALIQUOTA_ITBI = 0.03           # 3% ITBI
 # ============================================================
 # 3. CABEÇALHO OFICIAL
 # ============================================================
-st.markdown("""
+gov_badge_html = """
 <div class="gov-badge">
     <div class="gov-header-top">Prefeitura da Cidade do Rio de Janeiro · Reconversão Funcional de Ativos</div>
     <div class="main-title">PROJETO RECUPERE RIO</div>
     <div class="sub-title">Simulador de Trilhas Setoriais, Incentivo Fiscal e Impacto Econômico</div>
     <div class="proto-tag">🛠️ Simulação técnica em desenvolvimento — sem caráter oficial</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(gov_badge_html, unsafe_allow_html=True)
 
 # ============================================================
 # CAPÍTULO 1: DIRETRIZES GERAIS
 # ============================================================
-st.markdown("""
+cap1_html = """
 <div class="capitulo-box">
     <div class="capitulo-title">1. Diretrizes Gerais e Salvaguardas Operacionais</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(cap1_html, unsafe_allow_html=True)
 
 with st.expander("1.1 Teste de Enquadramento Funcional (Regra 70/50)", expanded=True):
     st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
@@ -269,11 +263,12 @@ with st.expander("1.5 Fundamentação Quantitativa por Custo de Instalação"):
 # ============================================================
 # CAPÍTULO 2: FLUXO DO INSTRUMENTO
 # ============================================================
-st.markdown("""
+cap2_html = """
 <div class="capitulo-box">
     <div class="capitulo-title">2. Fluxo do Instrumento</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(cap2_html, unsafe_allow_html=True)
 st.caption("👇 Toque em qualquer uma das etapas para ver o detalhamento técnico do processo:")
 
 col_f1, col_f2 = st.columns(2)
@@ -300,24 +295,25 @@ with col_f2:
 # ============================================================
 # CAPÍTULO 3: MATRIZ DE TRILHAS SETORIAIS
 # ============================================================
-st.markdown("""
+cap3_html = """
 <div class="capitulo-box">
     <div class="capitulo-title">3. Matriz de Trilhas Setoriais</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(cap3_html, unsafe_allow_html=True)
 
 st.write("Escolha uma trilha abaixo para visualizar as diretrizes e contrapartidas completas:")
 
 trilha_matriz_sel = st.radio(
     "Selecione a trilha para detalhamento:",
     options=list(TRILHAS.keys()),
-    format_func=lambda x: f"{TRILHAS[x]['emoji']} {x}",
+    format_func=lambda x: TRILHAS[x]["emoji"] + " " + x,
     horizontal=True
 )
 
 d_matriz = TRILHAS[trilha_matriz_sel]
 
-st.markdown(f"""
+card_matriz_html = f"""
 <div class="trilha-card-container">
     <div style="color: #1B3A5C; font-size: 20px; font-weight: 800; margin-bottom: 15px;">
         {d_matriz['emoji']} {trilha_matriz_sel}
@@ -339,16 +335,18 @@ st.markdown(f"""
         <div class="trilha-item-value">{d_matriz['contrapartida']}</div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(card_matriz_html, unsafe_allow_html=True)
 
 # ============================================================
 # CAPÍTULO 4: SIMULADOR DE ENGENHARIA FINANCEIRA
 # ============================================================
-st.markdown("""
+cap4_html = """
 <div class="capitulo-box">
     <div class="capitulo-title">4. Simulador de Engenharia Financeira</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(cap4_html, unsafe_allow_html=True)
 
 col_in1, col_in2, col_in3 = st.columns([1.2, 1, 1])
 with col_in1:
@@ -362,12 +360,8 @@ t = TRILHAS[trilha_sel]
 valor_venal = tamanho_m2 * valor_m2
 iptu_integral = valor_venal * ALIQUOTA_IPTU
 
-st.markdown(
-    f'<div class="info-line">📐 Valor venal calculated: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; '
-    f'IPTU integral anual (2,5%): <b>{fmt_moeda(iptu_integral)}</b> &nbsp;·&nbsp; '
-    f'Isenção na obra: <b>até {t["obra"]} anos</b> (antes da escada iniciar no Habite-se).</div>', 
-    unsafe_allow_html=True
-)
+info_line_html = f'<div class="info-line">📐 Valor venal calculado: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; IPTU integral anual (2,5%): <b>{fmt_moeda(iptu_integral)}</b> &nbsp;·&nbsp; Isenção na obra: <b>até {t["obra"]} anos</b> (antes da escada iniciar no Habite-se).</div>'
+st.markdown(info_line_html, unsafe_allow_html=True)
 st.write("")
 
 anos = list(range(1, 14))
@@ -424,22 +418,24 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 st.caption("💡 **Como ler o gráfico:** A altura total de cada barra é o IPTU cheio. A parte **dourada** é o que o investidor paga e a parte **verde** é o dinheiro economizado pelo programa.")
 
-relatorio_txt = f"""PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA
-------------------------------------------------------------
-Trilha Setorial: {trilha_sel}
-Área Construída: {fmt_num(tamanho_m2)} m²
-Valor por m²: {fmt_moeda(valor_m2)}
-Valor Venal Calculado: {fmt_moeda(valor_venal)}
-IPTU Integral Anual (2,5%): {fmt_moeda(iptu_integral)}
-
-RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):
-------------------------------------------------------------
-- Valor Total Pago com Benefício: {fmt_moeda(tot_pago)}
-- Economia Total Gerada: {fmt_moeda(tot_econ)}
-- Custo sem Programa (IPTU Cheio): {fmt_moeda(tot_sem)}
-
-* Simulação técnica em desenvolvimento — sem caráter oficial.
-"""
+relatorio_lines = [
+    "PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA",
+    "------------------------------------------------------------",
+    f"Trilha Setorial: {trilha_sel}",
+    f"Área Construída: {fmt_num(tamanho_m2)} m²",
+    f"Valor por m²: {fmt_moeda(valor_m2)}",
+    f"Valor Venal Calculado: {fmt_moeda(valor_venal)}",
+    f"IPTU Integral Anual (2,5%): {fmt_moeda(iptu_integral)}",
+    "",
+    "RESUMO FINANCEIRO (13 ANOS PÓS-HABITE-SE):",
+    "------------------------------------------------------------",
+    f"- Valor Total Pago com Benefício: {fmt_moeda(tot_pago)}",
+    f"- Economia Total Gerada: {fmt_moeda(tot_econ)}",
+    f"- Custo sem Programa (IPTU Cheio): {fmt_moeda(tot_sem)}",
+    "",
+    "* Simulação técnica em desenvolvimento — sem caráter oficial."
+]
+relatorio_txt = "\n".join(relatorio_lines)
 
 col_exp1, col_exp2 = st.columns([3, 1])
 with col_exp1:
@@ -465,14 +461,14 @@ with col_exp2:
 # ============================================================
 # CAPÍTULO 5: IMPACTOS ECONÔMICOS PROJETADOS
 # ============================================================
-st.markdown("""
+cap5_html = """
 <div class="capitulo-box">
     <div class="capitulo-title">5. Impactos Econômicos Projetados</div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(cap5_html, unsafe_allow_html=True)
 
-st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial de arrecadação. "
-           "O coeficiente de emprego do Varejo toma como referência o setor de shopping centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
+st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial de arrecadação. O coeficiente de emprego do Varejo toma como referência o setor de shopping centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
 
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
@@ -495,4 +491,4 @@ else:
         render_card("—", "Habitação gera receita por ITBI e consumo local", TXT_MUTED)
 
 st.write("")
-st.info(f"�
+msg_info = "💡 
