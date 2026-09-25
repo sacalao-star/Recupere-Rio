@@ -3,110 +3,104 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # ============================================================
-# 1. CONFIGURAÇÃO DA PÁGINA
+# 1. CONFIGURAÇÃO DA PÁGINA (SEM SIDEBAR)
 # ============================================================
 st.set_page_config(
     page_title="Projeto Recupere Rio — Simulador Técnico",
     layout="wide",
-    page_icon="🏛️"
+    initial_sidebar_state="collapsed"
 )
 
-# Inicializa o estado do tema (Padrão: Tema Claro / Light Mode)
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
-
-# ============================================================
-# 2. BARRA LATERAL (SIDEBAR): NAVEGAÇÃO & CONFIGURAÇÕES
-# ============================================================
-with st.sidebar:
-    st.title("⚙️ Painel de Controle")
-    
-    # Toggle de Tema
-    st.session_state.dark_mode = st.toggle("🌙 Modo Escuro / Dark Mode", value=st.session_state.dark_mode)
-    
-    st.divider()
-    st.markdown("### 🧭 Navegação Rápida")
-    st.markdown("""
-    - [1. Diretrizes & Salvaguardas](#1-diretrizes-gerais-e-salvaguardas-operacionais)
-    - [2. Fluxo do Instrumento](#2-fluxo-do-instrumento)
-    - [3. Matriz de Trilhas](#3-matriz-de-trilhas-setoriais)
-    - [4. Simulador Fiscal](#4-simulador-de-engenharia-financeira)
-    - [5. Impactos Econômicos](#5-impactos-econ-micos-projetados)
-    - [6. Justificativa Técnica](#6-justificativa-t-cnica-dos-prazos)
-    """)
-
-# Define Cores e Temas de acordo com a seleção
-IS_DARK = st.session_state.dark_mode
-
-BG_COLOR = "#0F172A" if IS_DARK else "#FFFFFF"
-CARD_BG = "#1E293B" if IS_DARK else "#F8FAFC"
-BORDER_COLOR = "#334155" if IS_DARK else "#E2E8F0"
-TXT_COLOR = "#F8FAFC" if IS_DARK else "#0F172A"
-TXT_MUTED = "#94A3B8" if IS_DARK else "#64748B"
-PLOTLY_TEMPLATE = "plotly_dark" if IS_DARK else "plotly_white"
-
+# ---- Paleta de Cores de Alto Contraste para Fundo Claro ----
 NAVY = "#1B3A5C"
-GOLD = "#C5A059" if IS_DARK else "#B8892F"
-VERDE = "#22C55E" if IS_DARK else "#15803D"
-VERMELHO = "#EF4444" if IS_DARK else "#B42318"
+GOLD = "#B8892F"
+VERDE = "#15803D"
+VERDE_BG = "#EAF6EE"
+VERMELHO = "#B42318"
+VERMELHO_BG = "#FDEDEB"
+TXT_DARK = "#0F172A"
+TXT_MUTED = "#475569"
+BORDER_COLOR = "#CBD5E1"
 
 st.markdown(f"""
     <style>
+    /* Força Fundo Branco e Texto Escuro em Todos os Componentes */
     .stApp {{
-        background-color: {BG_COLOR} !important;
-        color: {TXT_COLOR} !important;
+        background-color: #FFFFFF !important;
+        color: {TXT_DARK} !important;
     }}
     
-    /* Cabeçalho Institucional Oficial */
+    /* Remove a barra lateral completamente */
+    [data-testid="stSidebar"] {{
+        display: none !important;
+    }}
+    
+    /* Correção Global de Cores de Texto */
+    p, span, div, label, h1, h2, h3, h4, h5, h6, li {{
+        color: {TXT_DARK} !important;
+    }}
+    
+    /* Estilização dos Métricos do Streamlit */
+    [data-testid="stMetricValue"] {{
+        color: {NAVY} !important;
+        font-weight: 800 !important;
+    }}
+    [data-testid="stMetricLabel"] {{
+        color: {TXT_MUTED} !important;
+        font-weight: 600 !important;
+    }}
+
+    /* Estilização das Abas (Tabs) */
+    button[data-baseweb="tab"] p {{
+        color: {NAVY} !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }}
+
+    /* Cabeçalho Oficial */
     .gov-badge {{
         background: linear-gradient(135deg, #002147 0%, #244B72 100%);
         border: 1px solid {GOLD};
         border-radius: 12px;
-        padding: 22px;
+        padding: 20px;
         text-align: center;
         margin-bottom: 22px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }}
     .gov-header-top {{
-        color: {GOLD}; font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
+        color: {GOLD} !important; font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
         text-transform: uppercase; margin-bottom: 6px;
     }}
-    .main-title {{ color: #FFFFFF; font-size: 30px; font-weight: 800; margin-bottom: 4px; }}
-    .sub-title {{ color: #DCE6F0; font-size: 14.5px; }}
+    .main-title {{ color: #FFFFFF !important; font-size: 28px; font-weight: 800; margin-bottom: 4px; }}
+    .sub-title {{ color: #DCE6F0 !important; font-size: 14.5px; }}
     .proto-tag {{
         display: inline-block; margin-top: 12px; background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.4); color: #F1F5F9; font-size: 11.5px; font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.4); color: #F1F5F9 !important; font-size: 11.5px; font-weight: 600;
         padding: 4px 12px; border-radius: 20px;
     }}
     
     /* Títulos de Seção */
     .sec-title {{
-        color: {TXT_COLOR}; font-size: 21px; font-weight: 700; border-bottom: 2px solid {GOLD};
+        color: {NAVY} !important; font-size: 21px; font-weight: 700; border-bottom: 2px solid {GOLD};
         padding-bottom: 6px; margin-top: 25px; margin-bottom: 15px;
     }}
 
-    /* Passos do Fluxo */
-    .flow-step {{
-        background: {CARD_BG}; border: 1px solid {BORDER_COLOR}; border-left: 4px solid {NAVY};
-        border-radius: 8px; padding: 12px 14px; height: 100%; color: {TXT_COLOR};
-    }}
-
-    /* Cartões Métrica */
+    /* Cartões Métrica do Simulador */
     .metric-card {{
-        background: {CARD_BG}; border-radius: 10px; padding: 16px; text-align: center;
+        background: #F8FAFC; border-radius: 10px; padding: 16px; text-align: center;
         border: 1.5px solid {BORDER_COLOR};
     }}
-    .metric-val {{ font-size: 25px; font-weight: 800; }}
-    .metric-lbl {{ color: {TXT_MUTED}; font-size: 12px; font-weight: 600; margin-top: 4px; }}
+    .metric-val {{ font-size: 24px; font-weight: 800; }}
+    .metric-lbl {{ color: {TXT_MUTED} !important; font-size: 12px; font-weight: 600; margin-top: 4px; }}
 
-    /* Linha Informativa */
+    /* Caixas Informativas */
     .info-line {{
-        background: {CARD_BG}; border: 1px solid {BORDER_COLOR}; border-radius: 8px;
-        padding: 12px 16px; font-size: 13.5px; color: {TXT_COLOR}; margin-top: 10px;
+        background: #F1F5F9; border: 1px solid {BORDER_COLOR}; border-radius: 8px;
+        padding: 12px 16px; font-size: 13.5px; color: {NAVY} !important; margin-top: 10px;
     }}
 
     div[data-testid="stExpander"] {{
-        background-color: {CARD_BG} !important;
+        background-color: #F8FAFC !important;
         border: 1px solid {BORDER_COLOR} !important;
         border-radius: 8px !important;
     }}
@@ -127,7 +121,7 @@ def fmt_num(val):
 
 
 # ============================================================
-# 3. DADOS CENTRAIS DAS TRILHAS
+# 2. DADOS CENTRAIS DAS TRILHAS
 # ============================================================
 def pct_para_ano(ano, escada):
     for ano_max, pct in escada:
@@ -176,7 +170,7 @@ ALIQUOTA_INDIRETA = 0.05       # 5% ISS/ICMS
 ALIQUOTA_ITBI = 0.03           # 3% ITBI
 
 # ============================================================
-# 4. CABEÇALHO OFICIAL COM TAG DE SIMULAÇÃO
+# 3. CABEÇALHO OFICIAL
 # ============================================================
 st.markdown("""
 <div class="gov-badge">
@@ -188,9 +182,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# 5. DIRETRIZES GERAIS
+# 4. DIRETRIZES GERAIS
 # ============================================================
-st.markdown('<div class="sec-title" id="1-diretrizes-gerais-e-salvaguardas-operacionais">1. Diretrizes Gerais e Salvaguardas Operacionais</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title">1. Diretrizes Gerais e Salvaguardas Operacionais</div>', unsafe_allow_html=True)
 
 with st.expander("1.1 Teste de Enquadramento Funcional (Regra 70/50)", expanded=True):
     st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
@@ -201,27 +195,39 @@ with st.expander("1.3 Certificação Anual e Reversão Automática"):
 with st.expander("1.4 Gatilho de Revisão Quinquenal"):
     st.write("Nenhum incentivo opera em caráter perpétuo. Todos os descontos são auditados a cada 5 anos.")
 with st.expander("1.5 Fundamentação Quantitativa por Custo de Instalação"):
-    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de instalação por m² e ciclo de maturação de cada setor.")
+    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de installation por m² e ciclo de maturação de cada setor.")
 
 # ============================================================
-# 6. FLUXO DO INSTRUMENTO
+# 5. FLUXO DO INSTRUMENTO (CARTÕES INTERATIVOS - CLIQUE PARA VER)
 # ============================================================
-st.markdown('<div class="sec-title" id="2-fluxo-do-instrumento">2. Fluxo do Instrumento</div>', unsafe_allow_html=True)
-passos = [
-    ("1", "Notificação", "IPTU progressivo (6 meses)"),
-    ("2", "Leilão Saneado", "Aquisição do ativo"),
-    ("3", "Seleção da Trilha", "No sistema Reconverte"),
-    ("4", "Escada de Isenção", "Início pós-Habite-se"),
-]
-cols = st.columns(4)
-for c, (n, t, d) in zip(cols, passos):
-    c.markdown(f'<div class="flow-step"><b>{n}. {t}</b><br><span style="color:{TXT_MUTED};font-size:12px;">{d}</span></div>', unsafe_allow_html=True)
-st.caption("Ao arrematar o imóvel no leilão saneado, o investidor seleciona a trilha no sistema Reconverte e a escada fiscal é gerada automaticamente.")
+st.markdown('<div class="sec-title">2. Fluxo do Instrumento</div>', unsafe_allow_html=True)
+st.caption("👇 Toque em qualquer uma das etapas do fluxo para ver o detalhamento técnico do processo:")
+
+col_f1, col_f2 = st.columns(2)
+
+with col_f1:
+    with st.expander("📄 **1. Notificação** *(IPTU Progressivo)*", expanded=False):
+        st.write("**O que acontece:** O imóvel subutilizado ou abandonado é notificado pela Prefeitura.")
+        st.write("**Prazo:** 6 meses para apresentação de projeto ou início de atividade.")
+        st.write("**Consequência:** Aplicação de alíquotas progressivas de IPTU em caso de inércia.")
+
+    with st.expander("🔨 **2. Leilão Saneado** *(Aquisição do Ativo)*", expanded=False):
+        st.write("**O que acontece:** O imóvel é levado a leilão público com perdão/saneamento das dívidas tributárias anteriores.")
+        st.write("**Vantagem:** O investidor adquire o ativo sem o passivo fiscal histórico.")
+
+with col_f2:
+    with st.expander("💻 **3. Seleção da Trilha** *(No Sistema Reconverte)*", expanded=False):
+        st.write("**O que acontece:** Ao arrematar, o investidor cadastra o projeto e seleciona a trilha setorial adequada.")
+        st.write("**Regra:** Vinculação automática às regras de contrapartida e prazos de isenção durante a obra.")
+
+    with st.expander("📈 **4. Escada de Isenção** *(Início Pós-Habite-se)*", expanded=False):
+        st.write("**O que acontece:** A concessão do Habite-se dispara a contagem da escada de benefícios (Anos 1 a 13).")
+        st.write("**Acompanhamento:** Vistoria anual da regra 70/50 para manutenção dos descontos.")
 
 # ============================================================
-# 7. MATRIZ DE TRILHAS SETORIAIS
+# 6. MATRIZ DE TRILHAS SETORIAIS
 # ============================================================
-st.markdown('<div class="sec-title" id="3-matriz-de-trilhas-setoriais">3. Matriz de Trilhas Setoriais</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title">3. Matriz de Trilhas Setoriais</div>', unsafe_allow_html=True)
 tabs = st.tabs([f"{d['emoji']} {n}" for n, d in TRILHAS.items()])
 for tab, (nome, d) in zip(tabs, TRILHAS.items()):
     with tab:
@@ -233,9 +239,9 @@ for tab, (nome, d) in zip(tabs, TRILHAS.items()):
         st.markdown(f"**🤝 Contrapartida social:** {d['contrapartida']}")
 
 # ============================================================
-# 8. SIMULADOR FISCAL E EXPORTADOR
+# 7. SIMULADOR FISCAL
 # ============================================================
-st.markdown('<div class="sec-title" id="4-simulador-de-engenharia-financeira">4. Simulador de Engenharia Financeira</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title">4. Simulador de Engenharia Financeira</div>', unsafe_allow_html=True)
 
 col_in1, col_in2, col_in3 = st.columns([1.2, 1, 1])
 with col_in1:
@@ -279,26 +285,42 @@ m3.markdown(f'<div class="metric-card" style="border-color:{VERMELHO};"><div cla
 st.write("")
 st.subheader("📊 Comparativo Anual de Cobrança (R$)")
 
-# Gráfico Plotly com Tema Dinâmico
+# GRÁFICO EMPILHADO (STACKED BAR) - ULTRA LIMPO PARA TELEMÓVEL
 fig = go.Figure()
-fig.add_bar(x=[f"Ano {a}" for a in anos], y=sem_beneficio, name="Sem o programa (Cobrança cheia)", marker_color=VERMELHO)
-fig.add_bar(x=[f"Ano {a}" for a in anos], y=pagos, name="Pago com Recupere Rio", marker_color=GOLD)
-fig.add_bar(x=[f"Ano {a}" for a in anos], y=economias, name="Economia no ano", marker_color=VERDE)
+
+# Base da barra: O que foi Pago (Dourado)
+fig.add_bar(
+    x=[f"Ano {a}" for a in anos],
+    y=pagos,
+    name="IPTU Pago",
+    marker_color=GOLD,
+    hovertemplate="Ano %{x}<br>IPTU Pago: R$ %{y:,.0f}<extra></extra>"
+)
+
+# Topo da barra empilhada: A Economia/Isenção (Verde)
+fig.add_bar(
+    x=[f"Ano {a}" for a in anos],
+    y=economias,
+    name="Economia Gerada (Isenção)",
+    marker_color=VERDE,
+    hovertemplate="Ano %{x}<br>Economia: R$ %{y:,.0f}<extra></extra>"
+)
 
 fig.update_layout(
-    template=PLOTLY_TEMPLATE,
-    barmode="group",
-    plot_bgcolor=CARD_BG,
-    paper_bgcolor=BG_COLOR,
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_COLOR)),
-    margin=dict(l=10, r=10, t=10, b=10),
-    height=380,
-    xaxis=dict(tickfont=dict(color=TXT_COLOR)),
-    yaxis=dict(gridcolor=BORDER_COLOR, tickprefix="R$ ", tickfont=dict(color=TXT_COLOR))
+    barmode="stack",  # Empilha as barras para formar o total do IPTU!
+    plot_bgcolor="#FFFFFF",
+    paper_bgcolor="#FFFFFF",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_DARK)),
+    margin=dict(l=5, r=5, t=10, b=10),
+    height=360,
+    xaxis=dict(tickfont=dict(color=TXT_DARK)),
+    yaxis=dict(gridcolor="#E2E8F0", tickprefix="R$ ", tickfont=dict(color=TXT_DARK))
 )
-st.plotly_chart(fig, use_container_width=True)
 
-# Botão de Exportar a Simulação
+st.plotly_chart(fig, use_container_width=True)
+st.caption("💡 **Como ler o gráfico:** A altura total de cada barra é o IPTU cheio. A parte **dourada** é o que o investidor paga e a parte **verde** é o dinheiro economizado pelo programa.")
+
+# Botão de Exportar
 relatorio_txt = f"""PROJETO RECUPERE RIO — RELATÓRIO DE SIMULAÇÃO TÉCNICA
 ------------------------------------------------------------
 Trilha Setorial: {trilha_sel}
@@ -338,28 +360,28 @@ with col_exp2:
     )
 
 # ============================================================
-# 9. IMPACTOS ECONÔMICOS PROJETADOS (COM FONTES CITADAS)
+# 8. IMPACTOS ECONÔMICOS PROJETADOS
 # ============================================================
-st.markdown('<div class="sec-title" id="5-impactos-econ-micos-projetados">5. Impactos Econômicos Projetados</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title">5. Impactos Econômicos Projetados</div>', unsafe_allow_html=True)
 st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial de arrecadação. "
            "O coeficiente de emprego do Varejo toma como referência o setor de shopping centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
 
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
 i1, i2, i3 = st.columns(3)
-i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_COLOR}">{fmt_num(empregos_est)}</div>'
+i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est)}</div>'
             f'<div class="metric-lbl">Empregos estimados gerados</div></div>', unsafe_allow_html=True)
 
 if t["faturamento_m2"] is not None:
     faturamento_est = tamanho_m2 * t["faturamento_m2"]
     impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
-    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_COLOR}">{fmt_moeda(faturamento_est)}</div>'
+    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(faturamento_est)}</div>'
                 f'<div class="metric-lbl">Faturamento anual estimado</div></div>', unsafe_allow_html=True)
-    i3.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_COLOR}">{fmt_moeda(impostos_indiretos)}</div>'
+    i3.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(impostos_indiretos)}</div>'
                 f'<div class="metric-lbl">Impostos indiretos estimados/ano (ISS/ICMS via VAF)</div></div>', unsafe_allow_html=True)
 else:
     itbi_est = valor_venal * ALIQUOTA_ITBI
-    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_COLOR}">{fmt_moeda(itbi_est)}</div>'
+    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(itbi_est)}</div>'
                 f'<div class="metric-lbl">ITBI estimado na comercialização (3%)</div></div>', unsafe_allow_html=True)
     i3.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_MUTED}">—</div>'
                 f'<div class="metric-lbl">Habitação gera receita por ITBI e consumo local</div></div>', unsafe_allow_html=True)
@@ -368,9 +390,9 @@ st.write("")
 st.info(f"💡 **Fundamentação Técnica desta Trilha:** {t['justificativa']}")
 
 # ============================================================
-# 10. JUSTIFICATIVA TÉCNICA DOS PRAZOS
+# 9. JUSTIFICATIVA TÉCNICA DOS PRAZOS
 # ============================================================
-st.markdown('<div class="sec-title" id="6-justificativa-t-cnica-dos-prazos">6. Justificativa Técnica dos Prazos</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title">6. Justificativa Técnica dos Prazos</div>', unsafe_allow_html=True)
 df_just = pd.DataFrame({
     "Trilha": ["Varejo / Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação (incremental)", "Educação (pós-escada)", "Habitação"],
     "Prazo Adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos", "Permanente*", "6 anos"],
