@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # ============================================================
-# 1. CONFIGURAÇÃO DA PÁGINA (SEM SIDEBAR)
+# 1. CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
     page_title="Projeto Recupere Rio — Simulador Técnico",
@@ -11,96 +11,154 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ---- Paleta de Cores de Alto Contraste para Fundo Claro ----
+# ---- Paleta de Cores Institucionais de Alto Contraste ----
 NAVY = "#1B3A5C"
 GOLD = "#B8892F"
 VERDE = "#15803D"
-VERDE_BG = "#EAF6EE"
 VERMELHO = "#B42318"
-VERMELHO_BG = "#FDEDEB"
 TXT_DARK = "#0F172A"
 TXT_MUTED = "#475569"
 BORDER_COLOR = "#CBD5E1"
+BG_CARD = "#F8FAFC"
 
 st.markdown(f"""
     <style>
-    /* Força Fundo Branco e Texto Escuro em Todos os Componentes */
+    /* Força Fundo Branco Global */
     .stApp {{
         background-color: #FFFFFF !important;
         color: {TXT_DARK} !important;
     }}
     
-    /* Remove a barra lateral completamente */
-    [data-testid="stSidebar"] {{
-        display: none !important;
-    }}
-    
+    /* Oculta Sidebar completamente */
+    [data-testid="stSidebar"] {{ display: none !important; }}
+
     /* Correção Global de Cores de Texto */
     p, span, div, label, h1, h2, h3, h4, h5, h6, li {{
         color: {TXT_DARK} !important;
     }}
-    
-    /* Estilização dos Métricos do Streamlit */
-    [data-testid="stMetricValue"] {{
-        color: {NAVY} !important;
-        font-weight: 800 !important;
+
+    /* FIX DEFINITIVO PARA DROPDOWNS / SELECTBOX (OPÇÕES TOTALMENTE VISÍVEIS) */
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {{
+        background-color: #FFFFFF !important;
+        border: 2px solid {NAVY} !important;
+        border-radius: 8px !important;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15) !important;
     }}
-    [data-testid="stMetricLabel"] {{
-        color: {TXT_MUTED} !important;
+    div[role="option"], li[data-baseweb="option"] {{
+        background-color: #FFFFFF !important;
+        color: {TXT_DARK} !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+        padding: 10px 14px !important;
+    }}
+    div[role="option"] *, li[data-baseweb="option"] * {{
+        color: {TXT_DARK} !important;
+        background-color: transparent !important;
+    }}
+    div[role="option"]:hover, li[data-baseweb="option"]:hover, 
+    div[role="option"][aria-selected="true"], li[data-baseweb="option"][aria-selected="true"] {{
+        background-color: #E2E8F0 !important;
+        color: {NAVY} !important;
+    }}
+    div[data-baseweb="select"] > div {{
+        background-color: #F8FAFC !important;
+        border: 1.5px solid {BORDER_COLOR} !important;
+        border-radius: 8px !important;
+    }}
+    div[data-baseweb="select"] * {{
+        color: {TXT_DARK} !important;
         font-weight: 600 !important;
     }}
 
-    /* Estilização das Abas (Tabs) */
-    button[data-baseweb="tab"] p {{
+    /* CAPÍTULOS DESTAQUE E CENTRALIZADOS */
+    .capitulo-box {{
+        text-align: center;
+        background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+        border-top: 3px solid {NAVY};
+        border-bottom: 3px solid {GOLD};
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 35px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }}
+    .capitulo-title {{
         color: {NAVY} !important;
-        font-weight: 700 !important;
-        font-size: 15px !important;
+        font-size: 19px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.8px;
+        margin: 0 !important;
+        text-transform: uppercase;
     }}
 
-    /* Cabeçalho Oficial */
+    /* CABEÇALHO OFICIAL */
     .gov-badge {{
         background: linear-gradient(135deg, #002147 0%, #244B72 100%);
-        border: 1px solid {GOLD};
+        border: 1.5px solid {GOLD};
         border-radius: 12px;
-        padding: 20px;
+        padding: 22px 18px;
         text-align: center;
         margin-bottom: 22px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }}
     .gov-header-top {{
-        color: {GOLD} !important; font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
+        color: {GOLD} !important; font-size: 11px; font-weight: 800; letter-spacing: 2px;
         text-transform: uppercase; margin-bottom: 6px;
     }}
-    .main-title {{ color: #FFFFFF !important; font-size: 28px; font-weight: 800; margin-bottom: 4px; }}
-    .sub-title {{ color: #DCE6F0 !important; font-size: 14.5px; }}
+    .main-title {{ color: #FFFFFF !important; font-size: 26px; font-weight: 800; margin-bottom: 4px; }}
+    .sub-title {{ color: #DCE6F0 !important; font-size: 14px; }}
     .proto-tag {{
-        display: inline-block; margin-top: 12px; background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.4); color: #F1F5F9 !important; font-size: 11.5px; font-weight: 600;
+        display: inline-block; margin-top: 10px; background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.4); color: #F1F5F9 !important; font-size: 11px; font-weight: 600;
         padding: 4px 12px; border-radius: 20px;
     }}
-    
-    /* Títulos de Seção */
-    .sec-title {{
-        color: {NAVY} !important; font-size: 21px; font-weight: 700; border-bottom: 2px solid {GOLD};
-        padding-bottom: 6px; margin-top: 25px; margin-bottom: 15px;
-    }}
 
-    /* Cartões Métrica do Simulador */
-    .metric-card {{
-        background: #F8FAFC; border-radius: 10px; padding: 16px; text-align: center;
+    /* CARTÕES DA MATRIZ SETORIAL (SEÇÃO 3) */
+    .trilha-card-container {{
+        background-color: {BG_CARD};
         border: 1.5px solid {BORDER_COLOR};
+        border-radius: 12px;
+        padding: 18px;
+        margin-top: 10px;
+        margin-bottom: 15px;
     }}
-    .metric-val {{ font-size: 24px; font-weight: 800; }}
-    .metric-lbl {{ color: {TXT_MUTED} !important; font-size: 12px; font-weight: 600; margin-top: 4px; }}
+    .trilha-item-box {{
+        background: #FFFFFF;
+        border-left: 4px solid {NAVY};
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        border: 1px solid {BORDER_COLOR};
+    }}
+    .trilha-item-label {{
+        color: {TXT_MUTED} !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }}
+    .trilha-item-value {{
+        color: {NAVY} !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }}
 
-    /* Caixas Informativas */
+    /* CARTÕES DE MÉTRICA DO SIMULADOR */
+    .metric-card {{
+        background: {BG_CARD}; border-radius: 10px; padding: 14px; text-align: center;
+        border: 1.5px solid {BORDER_COLOR}; margin-bottom: 10px;
+    }}
+    .metric-val {{ font-size: 23px; font-weight: 800; }}
+    .metric-lbl {{ color: {TXT_MUTED} !important; font-size: 12px; font-weight: 600; margin-top: 3px; }}
+
+    /* LINHA INFORMATIVA */
     .info-line {{
         background: #F1F5F9; border: 1px solid {BORDER_COLOR}; border-radius: 8px;
         padding: 12px 16px; font-size: 13.5px; color: {NAVY} !important; margin-top: 10px;
     }}
 
     div[data-testid="stExpander"] {{
-        background-color: #F8FAFC !important;
+        background-color: {BG_CARD} !important;
         border: 1px solid {BORDER_COLOR} !important;
         border-radius: 8px !important;
     }}
@@ -139,28 +197,28 @@ TRILHAS = {
         "emoji": "🛒", "obra": 3, "escada": ESCADA_PADRAO,
         "emprego_m2": 25, "faturamento_m2": 6000,
         "extra": "Isenção de 3 anos em alvará, licenciamento e TCL.",
-        "contrapartida": "Cota de contratação local pontua no leilão saneado.",
+        "contrapartida": "Cota de contratação local pontua como critério no leilão saneado.",
         "justificativa": "Retrofit comercial é rápido (6 a 18 meses de obra) e a receita amadurece logo após abrir. Seis anos dá fôlego frente ao e-commerce sem virar vantagem permanente.",
     },
     "Saúde": {
         "emoji": "🏥", "obra": 5, "escada": ESCADA_SAUDE,
         "emprego_m2": 20, "faturamento_m2": 8000,
-        "extra": "Prazo de obra estendido pela exigência regulatória da Anvisa.",
-        "contrapartida": "10% da capacidade de exames de alta complexidade para o SUS (Sisreg).",
+        "extra": "Prazo de obra estendido de até 5 anos devido a exigências regulatórias da Anvisa.",
+        "contrapartida": "10% da capacidade de exames de alta complexidade e consultas para o SUS (Sisreg).",
         "justificativa": "Exigência da Anvisa (gases medicinais, subestação dedicada) alonga genuinamente o prazo de obra. O retorno é mais longo por conta dos equipamentos e credenciamento de convênios.",
     },
     "Educação": {
         "emoji": "🎓", "obra": 3, "escada": ESCADA_EDUCACAO,
         "emprego_m2": 45, "faturamento_m2": 3500,
-        "extra": "Após o ano 10, desconto fixo de 30% sobre o IPTU total (revisado a cada 5 anos).",
-        "contrapartida": "10% das vagas em bolsa integral via CadÚnico.",
+        "extra": "Após o ano 10, desconto fixo permanente de 30% sobre o IPTU total (revisado a cada 5 anos).",
+        "contrapartida": "10% das vagas em bolsas de estudo integrais via CadÚnico.",
         "justificativa": "Muda de natureza após o ano 10: deixa de ser sobre recuperar custo de obra e passa a desconto condicionado à manutenção da nota no MEC.",
     },
     "Habitação": {
         "emoji": "🏠", "obra": 3, "escada": ESCADA_PADRAO,
         "emprego_m2": 200, "faturamento_m2": None,
-        "extra": "20% de bônus de potencial construtivo via Operação Interligada.",
-        "contrapartida": "20% das unidades em Locação Social por 30 anos.",
+        "extra": "20% de bônus de potencial construtivo adicional via Operação Interligada.",
+        "contrapartida": "20% das unidades residenciais destinadas à Locação Social por 30 anos.",
         "justificativa": "Não é sobre tempo de obra — é sobre o tempo de absorção do mercado para comercializar as unidades residenciais na planta (Reviver Centro).",
     },
 }
@@ -175,16 +233,20 @@ ALIQUOTA_ITBI = 0.03           # 3% ITBI
 st.markdown("""
 <div class="gov-badge">
     <div class="gov-header-top">Prefeitura da Cidade do Rio de Janeiro · Reconversão Funcional de Ativos</div>
-    <div class="main-title">Projeto Recupere Rio</div>
+    <div class="main-title">PROJETO RECUPERE RIO</div>
     <div class="sub-title">Simulador de Trilhas Setoriais, Incentivo Fiscal e Impacto Econômico</div>
     <div class="proto-tag">🛠️ Simulação técnica em desenvolvimento — sem caráter oficial</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# 4. DIRETRIZES GERAIS
+# CAPÍTULO 1: DIRETRIZES GERAIS
 # ============================================================
-st.markdown('<div class="sec-title">1. Diretrizes Gerais e Salvaguardas Operacionais</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="capitulo-box">
+    <div class="capitulo-title">1. Diretrizes Gerais e Salvaguardas Operacionais</div>
+</div>
+""", unsafe_allow_html=True)
 
 with st.expander("1.1 Teste de Enquadramento Funcional (Regra 70/50)", expanded=True):
     st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
@@ -195,13 +257,17 @@ with st.expander("1.3 Certificação Anual e Reversão Automática"):
 with st.expander("1.4 Gatilho de Revisão Quinquenal"):
     st.write("Nenhum incentivo opera em caráter perpétuo. Todos os descontos são auditados a cada 5 anos.")
 with st.expander("1.5 Fundamentação Quantitativa por Custo de Instalação"):
-    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de installation por m² e ciclo de maturação de cada setor.")
+    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de instalação por m² e ciclo de maturação de cada setor.")
 
 # ============================================================
-# 5. FLUXO DO INSTRUMENTO (CARTÕES INTERATIVOS - CLIQUE PARA VER)
+# CAPÍTULO 2: FLUXO DO INSTRUMENTO
 # ============================================================
-st.markdown('<div class="sec-title">2. Fluxo do Instrumento</div>', unsafe_allow_html=True)
-st.caption("👇 Toque em qualquer uma das etapas do fluxo para ver o detalhamento técnico do processo:")
+st.markdown("""
+<div class="capitulo-box">
+    <div class="capitulo-title">2. Fluxo do Instrumento</div>
+</div>
+""", unsafe_allow_html=True)
+st.caption("👇 Toque em qualquer uma das etapas para ver o detalhamento técnico do processo:")
 
 col_f1, col_f2 = st.columns(2)
 
@@ -225,23 +291,63 @@ with col_f2:
         st.write("**Acompanhamento:** Vistoria anual da regra 70/50 para manutenção dos descontos.")
 
 # ============================================================
-# 6. MATRIZ DE TRILHAS SETORIAIS
+# CAPÍTULO 3: MATRIZ DE TRILHAS SETORIAIS (REFORMULADO E DESTACADO)
 # ============================================================
-st.markdown('<div class="sec-title">3. Matriz de Trilhas Setoriais</div>', unsafe_allow_html=True)
-tabs = st.tabs([f"{d['emoji']} {n}" for n, d in TRILHAS.items()])
-for tab, (nome, d) in zip(tabs, TRILHAS.items()):
-    with tab:
-        st.subheader(f"{d['emoji']} {nome}")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Isenção na obra", f"Até {d['obra']} anos")
-        c2.metric("Isenção total (100%)", f"{d['escada'][0][0]} anos")
-        c3.metric("Benefício extra", d["extra"].split(".")[0])
-        st.markdown(f"**🤝 Contrapartida social:** {d['contrapartida']}")
+st.markdown("""
+<div class="capitulo-box">
+    <div class="capitulo-title">3. Matriz de Trilhas Setoriais</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.write("Escolha uma trilha abaixo para visualizar as diretrizes e contrapartidas completas (sem texto cortado):")
+
+# Seletor de Trilhas em Destaque
+trilha_matriz_sel = st.radio(
+    "Selecione a trilha para detalhamento:",
+    options=list(TRILHAS.keys()),
+    format_func=lambda x: f"{TRILHAS[x]['emoji']} {x}",
+    horizontal=True
+)
+
+d_matriz = TRILHAS[trilha_matriz_sel]
+
+# Exibição da Matriz em Cartões Verticais de Largura Total
+st.markdown(f"""
+<div class="trilha-card-container">
+    <div style="color: #1B3A5C; font-size: 20px; font-weight: 800; margin-bottom: 15px;">
+        {d_matriz['emoji']} {trilha_matriz_sel}
+    </div>
+    
+    <div class="trilha-item-box">
+        <div class="trilha-item-label">🏗️ Isenção na Obra</div>
+        <div class="trilha-item-value">Até {d_matriz['obra']} anos de isenção total durante o período de reformas.</div>
+    </div>
+    
+    <div class="trilha-item-box">
+        <div class="trilha-item-label">📉 Isenção Total pós-Habite-se</div>
+        <div class="trilha-item-value">{d_matriz['escada'][0][0]} anos com 100% de isenção de IPTU após a conclusão da obra.</div>
+    </div>
+    
+    <div class="trilha-item-box">
+        <div class="trilha-item-label">🎁 Benefício Extra</div>
+        <div class="trilha-item-value">{d_matriz['extra']}</div>
+    </div>
+    
+    <div class="trilha-item-box">
+        <div class="trilha-item-label">🤝 Contrapartida Social Obrigatória</div>
+        <div class="trilha-item-value">{d_matriz['contrapartida']}</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
-# 7. SIMULADOR FISCAL
+# CAPÍTULO 4: SIMULADOR DE ENGENHARIA FINANCEIRA
 # ============================================================
-st.markdown('<div class="sec-title">4. Simulador de Engenharia Financeira</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="capitulo-box">
+    <div class="capitulo-title">4. Simulador de Engenharia Financeira</div>
+</div>
+""", unsafe_allow_html=True)
 
 col_in1, col_in2, col_in3 = st.columns([1.2, 1, 1])
 with col_in1:
@@ -285,10 +391,9 @@ m3.markdown(f'<div class="metric-card" style="border-color:{VERMELHO};"><div cla
 st.write("")
 st.subheader("📊 Comparativo Anual de Cobrança (R$)")
 
-# GRÁFICO EMPILHADO (STACKED BAR) - ULTRA LIMPO PARA TELEMÓVEL
+# GRÁFICO EMPILHADO (STACKED BAR) - LIMPÍSSIMO PARA TELEMÓVEL
 fig = go.Figure()
 
-# Base da barra: O que foi Pago (Dourado)
 fig.add_bar(
     x=[f"Ano {a}" for a in anos],
     y=pagos,
@@ -297,7 +402,6 @@ fig.add_bar(
     hovertemplate="Ano %{x}<br>IPTU Pago: R$ %{y:,.0f}<extra></extra>"
 )
 
-# Topo da barra empilhada: A Economia/Isenção (Verde)
 fig.add_bar(
     x=[f"Ano {a}" for a in anos],
     y=economias,
@@ -307,7 +411,7 @@ fig.add_bar(
 )
 
 fig.update_layout(
-    barmode="stack",  # Empilha as barras para formar o total do IPTU!
+    barmode="stack",
     plot_bgcolor="#FFFFFF",
     paper_bgcolor="#FFFFFF",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=TXT_DARK)),
@@ -360,50 +464,18 @@ with col_exp2:
     )
 
 # ============================================================
-# 8. IMPACTOS ECONÔMICOS PROJETADOS
+# CAPÍTULO 5: IMPACTOS ECONÔMICOS PROJETADOS
 # ============================================================
-st.markdown('<div class="sec-title">5. Impactos Econômicos Projetados</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="capitulo-box">
+    <div class="capitulo-title">5. Impactos Econômicos Projetados</div>
+</div>
+""", unsafe_allow_html=True)
+
 st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial de arrecadação. "
            "O coeficiente de emprego do Varejo toma como referência o setor de shopping centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
 
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
 i1, i2, i3 = st.columns(3)
-i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est)}</div>'
-            f'<div class="metric-lbl">Empregos estimados gerados</div></div>', unsafe_allow_html=True)
-
-if t["faturamento_m2"] is not None:
-    faturamento_est = tamanho_m2 * t["faturamento_m2"]
-    impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
-    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(faturamento_est)}</div>'
-                f'<div class="metric-lbl">Faturamento anual estimado</div></div>', unsafe_allow_html=True)
-    i3.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(impostos_indiretos)}</div>'
-                f'<div class="metric-lbl">Impostos indiretos estimados/ano (ISS/ICMS via VAF)</div></div>', unsafe_allow_html=True)
-else:
-    itbi_est = valor_venal * ALIQUOTA_ITBI
-    i2.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_moeda(itbi_est)}</div>'
-                f'<div class="metric-lbl">ITBI estimado na comercialização (3%)</div></div>', unsafe_allow_html=True)
-    i3.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{TXT_MUTED}">—</div>'
-                f'<div class="metric-lbl">Habitação gera receita por ITBI e consumo local</div></div>', unsafe_allow_html=True)
-
-st.write("")
-st.info(f"💡 **Fundamentação Técnica desta Trilha:** {t['justificativa']}")
-
-# ============================================================
-# 9. JUSTIFICATIVA TÉCNICA DOS PRAZOS
-# ============================================================
-st.markdown('<div class="sec-title">6. Justificativa Técnica dos Prazos</div>', unsafe_allow_html=True)
-df_just = pd.DataFrame({
-    "Trilha": ["Varejo / Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação (incremental)", "Educação (pós-escada)", "Habitação"],
-    "Prazo Adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos", "Permanente*", "6 anos"],
-    "Fundamentação Técnica": [
-        "Retrofit comercial é rápido (6 a 18 meses). Seis anos dá fôlego frente ao e-commerce sem virar vantagem permanente.",
-        "Exigência da Anvisa (gases medicinais, subestação dedicada) alonga genuinamente o prazo de obra sem receita.",
-        "Ciclo de maturação longo: equipamento caro, credenciamento de convênios, carteira de pacientes.",
-        "Mesma lógica construtiva e de amortização do Varejo.",
-        "Muda de natureza: deixa de ser sobre custo de obra e passa a desconto condicionado à manutenção da nota no MEC.",
-        "Tempo de absorção do mercado para vender as unidades residenciais na planta (Reviver Centro).",
-    ],
-})
-st.dataframe(df_just, hide_index=True, use_container_width=True)
-st.warning("⚠️ **Nota de Ajuste de Risco:** O par 5+8 anos da trilha Saúde é a premissa menos testada — recomenda-se validação técnica formal com a Secretaria Municipal de Saúde.")
+i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est
