@@ -10,9 +10,15 @@ st.markdown("""
     .titulo { color: #1B3A5C; font-size: 32px; font-weight: bold; text-align: center; }
     .subtitulo { color: #5C6772; font-size: 18px; font-style: italic; text-align: center; margin-bottom: 20px; }
     .kicker { color: #1B3A5C; font-size: 14px; text-align: center; font-weight: bold; }
-    .card-box { background-color: #1E2229; padding: 15px; border-radius: 10px; border-left: 5px solid #1B3A5C; margin-bottom: 15px; }
+    .metric-pago { color: #D15A39; font-size: 26px; font-weight: bold; margin-top: 10px; }
+    .metric-econ { color: #2E7D32; font-size: 26px; font-weight: bold; margin-top: 10px; }
+    .metric-label { color: #5C6772; font-size: 13px; margin-bottom: 15px; }
     </style>
 """, unsafe_allow_html=True)
+
+# Função para formatar valores no padrão com pontos (ex: 8.800.000)
+def fmt_moeda(valor):
+    return f"R$ {valor:,.0f}".replace(",", ".")
 
 # 2. CABEÇALHO
 st.markdown('<div class="titulo">PROJETO RECUPERE RIO</div>', unsafe_allow_html=True)
@@ -44,7 +50,7 @@ col1.error("📄 **1. Notificação**\n\nIPTU progressivo (6 meses)")
 col2.warning("🔨 **2. Leilão Saneado**\n\nAquisição do ativo")
 col3.info("💻 **3. Seleção da Trilha**\n\nNo sistema Reconverte")
 col4.success("📈 **4. Escada de Isenção**\n\nInício pós-Habite-se")
-st.caption("Ao arrematar o imóvel, o investidor seleciona a trilha no sistema Reconverte e o benefício é calculado automaticamente.")
+st.caption("Ao arrematar o imóvel, o investidor seleciona a trilha no sistema Reconverte e o benefício é calculated automaticamente.")
 
 st.divider()
 
@@ -57,7 +63,7 @@ with tab1:
     c1, c2, c3 = st.columns(3)
     c1.metric("🏗️ Isenção na Obra", "Até 3 Anos")
     c2.metric("📉 Escada Incremental", "6 Anos")
-    c3.metric("🎁 Benefício Extra", "Alvará + TCL Isentos (3 yrs)")
+    c3.metric("🎁 Benefício Extra", "Alvará + TCL Isentos (3 anos)")
     st.markdown("**🤝 Contrapartida Social:** Cota de contratação local serve como critério de desempate no leilão.")
 
 with tab2:
@@ -86,67 +92,77 @@ with tab4:
 
 st.divider()
 
-# ---------------- SECÇÃO 4: SIMULADOR FISCAL DINÂMICO ----------------
-st.header("4. Simulador de Economia Fiscal")
-st.write("Ajuste os valores abaixo para calcular a economia de caixa gerada pelo programa.")
+# ---------------- SECÇÃO 4: SIMULADOR DE COBRANÇA DO IPTU ----------------
+st.header("4. Modelagem Fiscal Incremental e Simulador")
+st.write("Informe o Valor Venal do imóvel e selecione a trilha para gerar a escada de cobrança detalhada ano a ano (Anos 1 a 13).")
 
-# Painel de Controle (Inputs interativos)
-c_in1, c_in2, c_in3 = st.columns([1, 1, 1])
+col_sel1, col_sel2 = st.columns([1, 1])
 
-with c_in1:
-    iptu_base = st.slider("IPTU Atual (Base - R$):", min_value=1000, max_value=100000, value=10000, step=1000)
+with col_sel1:
+    trilha_calc = st.selectbox(
+        "Escolha a trilha setorial:",
+        ["Varejo / Indústria", "Saúde", "Educação", "Habitação"]
+    )
 
-with c_in2:
-    iptu_novo = st.slider("IPTU Estimado Pós-Obra (R$):", min_value=iptu_base, max_value=300000, value=50000, step=5000)
+with col_sel2:
+    valor_venal = st.number_input(
+        "Valor venal do imóvel após a obra (R$)",
+        value=8800000,
+        step=100000,
+        format="%d"
+    )
+    st.caption(f"Valor inserido: **{fmt_moeda(valor_venal)}**")
 
-with c_in3:
-    trilha = st.selectbox("Selecione a Trilha Setorial:", ["Varejo/Indústria", "Saúde", "Educação", "Habitação"])
+st.caption("Durante a obra, o terreno tem isenção de IPTU por até 3 anos, antes desta escada começar a contar (a partir do Habite-se).")
 
-# Lógica dos Cálculos
-incremental = iptu_novo - iptu_base
-anos = list(range(1, 11))
-pagamento_com = []
-pagamento_sem = []
+# Alíquota comercial do IPTU: 2.5% ao ano
+iptu_cheio_anual = valor_venal * 0.025
+
+anos = list(range(1, 14))
+cobranca_pct = []
+iptu_pago = []
 
 for ano in anos:
-    pagamento_sem.append(iptu_novo)
-    
     if ano <= 6:
-        taxa = 0.0
+        pct = 0
     elif ano in [7, 8]:
-        taxa = 0.0 if trilha == "Saúde" else 0.25
+        pct = 0 if trilha_calc == "Saúde" else 25
     elif ano in [9, 10]:
-        taxa = 0.25 if trilha == "Saúde" else 0.50
-    else:
-        taxa = 1.0
-        
-    valor_pago = iptu_base + (incremental * taxa)
-    pagamento_com.append(valor_pago)
+        pct = 25 if trilha_calc == "Saúde" else 50
+    else: # Anos 11, 12, 13
+        if trilha_calc == "Educação":
+            pct = 70  # 30% de desconto permanente (paga 70%)
+        elif trilha_calc == "Saúde" and ano in [11, 12]:
+            pct = 50
+        else:
+            pct = 100
+            
+    valor_ano = iptu_cheio_anual * (pct / 100.0)
+    cobranca_pct.append(f"{pct}%")
+    iptu_pago.append(valor_ano)
 
-total_sem_beneficio = sum(pagamento_sem)
-total_com_beneficio = sum(pagamento_com)
-economia_total = total_sem_beneficio - total_com_beneficio
-pct_economia = (economia_total / total_sem_beneficio) * 100
-
-# Exibição das Métricas de Destaque (KPIs)
-m1, m2, m3 = st.columns(3)
-m1.metric("💰 Economia Total (10 Anos)", f"R$ {economia_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-m2.metric("📉 Desconto Efetivo Acumulado", f"{pct_economia:.1f}%")
-m3.metric("💳 Paga com Benefício", f"R$ {total_com_beneficio:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
-
-st.subheader("📊 Comparativo Anual do IPTU a Pagar (R$)")
-
-# Criando tabela comparativa para o gráfico
-df_grafico = pd.DataFrame({
+# Construção da tabela formatada com pontos nos milhares
+df_calculadora = pd.DataFrame({
     "Ano": [f"Ano {a}" for a in anos],
-    "Com Recupere Rio": pagamento_com,
-    "Sem Benefício (Cheio)": pagamento_sem
+    "Cobrança": cobranca_pct,
+    "IPTU no ano": [fmt_moeda(v) for v in iptu_pago]
 })
-df_grafico.set_index("Ano", inplace=True)
 
-# Gráfico de barras comparativo
-st.bar_chart(df_grafico, color=["#1B3A5C", "#A9B7C6"])
-st.caption("🟦 **Com Recupere Rio** vs ⬜ **Sem Benefício**: O espaço entre as barras representa o dinheiro economizado pelo investidor.")
+st.table(df_calculadora)
+
+# Totais Financeiros
+total_pago = sum(iptu_pago)
+total_sem_beneficio = iptu_cheio_anual * 13
+economia_total = total_sem_beneficio - total_pago
+
+m_col1, m_col2 = st.columns(2)
+with m_col1:
+    st.markdown(f'<div class="metric-pago">{fmt_moeda(total_pago)}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="metric-label">pago acumulado em 13 anos</div>', unsafe_allow_html=True)
+
+with m_col2:
+    st.markdown(f'<div class="metric-econ">{fmt_moeda(economia_total)}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="metric-label">economizado vs. cobrança cheia sem programa</div>', unsafe_allow_html=True)
 
 st.divider()
 
