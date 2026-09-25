@@ -1,311 +1,332 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 
+# ============================================================
 # 1. CONFIGURAÇÃO DA PÁGINA
+# ============================================================
 st.set_page_config(
-    page_title="Projeto Recupere Rio — Portal Oficial",
+    page_title="Projeto Recupere Rio — Simulador",
     layout="wide",
     page_icon="🏛️"
 )
 
-# Estilização CSS Institucional — Governo do Estado & Prefeitura do Rio de Janeiro
-st.markdown("""
+# ---- Cores centrais (mesma paleta do Memorial Técnico e do simulador HTML) ----
+NAVY = "#1B3A5C"
+GOLD = "#B8892F"
+VERDE = "#15803D"
+VERDE_BG = "#EAF6EE"
+VERMELHO = "#B42318"
+VERMELHO_BG = "#FDEDEB"
+CINZA_TXT = "#5C6772"
+LINHA = "#E4E1D6"
+
+st.markdown(f"""
     <style>
-    .stApp {
-        background-color: #0F172A;
-        color: #F8FAFC;
-    }
-    
-    /* Cabeçalho Institucional do Rio de Janeiro */
-    .gov-badge {
-        background: linear-gradient(135deg, #002147 0%, #003865 100%);
-        border: 1px solid #C5A059;
-        border-radius: 10px;
-        padding: 18px;
-        text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    }
-    .gov-header-top {
-        color: #C5A059;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-    }
-    .main-title {
-        color: #FFFFFF;
-        font-size: 30px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        margin-bottom: 4px;
-    }
-    .sub-title {
-        color: #CBD5E1;
-        font-size: 15px;
-        font-style: italic;
-    }
-    .sec-title {
-        color: #FFFFFF;
-        font-size: 22px;
-        font-weight: 700;
-        border-bottom: 2px solid #C5A059;
-        padding-bottom: 6px;
-        margin-top: 25px;
-        margin-bottom: 15px;
-    }
-    
-    /* Cartões de Métricas Financeiras */
-    .metric-box-econ {
-        background-color: #1E293B;
-        border: 1.5px solid #22C55E;
-        border-radius: 10px;
-        padding: 16px;
-        text-align: center;
-    }
-    .metric-box-pago {
-        background-color: #1E293B;
-        border: 1.5px solid #C5A059;
-        border-radius: 10px;
-        padding: 16px;
-        text-align: center;
-    }
-    .metric-box-sem {
-        background-color: #1E293B;
-        border: 1.5px solid #475569;
-        border-radius: 10px;
-        padding: 16px;
-        text-align: center;
-    }
-    .val-econ { color: #22C55E; font-size: 28px; font-weight: 800; }
-    .val-pago { color: #C5A059; font-size: 28px; font-weight: 800; }
-    .val-sem { color: #94A3B8; font-size: 28px; font-weight: 800; }
-    .lbl-metric { color: #94A3B8; font-size: 13px; font-weight: 600; margin-top: 4px; }
-    
-    .justificativa-box {
-        background-color: #1E293B;
-        border-left: 4px solid #C5A059;
-        border-radius: 6px;
-        padding: 16px;
-        margin-top: 15px;
-    }
+    .stApp {{ background-color: #FFFFFF; }}
+    .block-container {{ padding-top: 1.2rem; max-width: 1100px; }}
+
+    .gov-badge {{
+        background: linear-gradient(135deg, {NAVY} 0%, #244B72 100%);
+        border-radius: 14px;
+        padding: 26px 30px;
+        margin-bottom: 22px;
+        box-shadow: 0 6px 20px rgba(27,58,92,0.18);
+    }}
+    .gov-header-top {{
+        color: {GOLD}; font-size: 11.5px; font-weight: 700; letter-spacing: 2px;
+        text-transform: uppercase; margin-bottom: 8px;
+    }}
+    .main-title {{ color: #FFFFFF; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }}
+    .sub-title {{ color: #DCE6F0; font-size: 15px; }}
+    .proto-tag {{
+        display: inline-block; margin-top: 14px; background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.35); color: #F1F5F9; font-size: 11.5px;
+        padding: 4px 10px; border-radius: 20px;
+    }}
+
+    .sec-title {{
+        color: {NAVY}; font-size: 21px; font-weight: 700; border-bottom: 2px solid {GOLD};
+        padding-bottom: 7px; margin-top: 30px; margin-bottom: 14px;
+    }}
+
+    .flow-step {{
+        background: #F8F9FB; border: 1px solid {LINHA}; border-left: 4px solid {NAVY};
+        border-radius: 8px; padding: 12px 14px; height: 100%;
+    }}
+    .flow-step b {{ color: {NAVY}; }}
+
+    .metric-card {{ border-radius: 12px; padding: 18px; text-align: center; border: 1.5px solid; }}
+    .metric-pago {{ background: #FBF7EE; border-color: {GOLD}; }}
+    .metric-econ {{ background: {VERDE_BG}; border-color: {VERDE}; }}
+    .metric-sem {{ background: {VERMELHO_BG}; border-color: {VERMELHO}; }}
+    .metric-val {{ font-size: 26px; font-weight: 800; }}
+    .metric-lbl {{ color: {CINZA_TXT}; font-size: 12.5px; font-weight: 600; margin-top: 4px; }}
+
+    .info-line {{ background: #F4F6F8; border-radius: 8px; padding: 10px 14px; font-size: 13.5px; color: {NAVY}; }}
+    .impact-card {{
+        background: #FAFAF8; border: 1px solid {LINHA}; border-radius: 12px; padding: 18px;
+    }}
+    .impact-val {{ font-size: 24px; font-weight: 800; color: {NAVY}; }}
+    .impact-lbl {{ color: {CINZA_TXT}; font-size: 12.5px; }}
     </style>
 """, unsafe_allow_html=True)
 
-# Função para formatar valores no padrão brasileiro com pontos nos milhares
+
 def fmt_moeda(val):
-    if val is None: return "R$ 0"
+    if val is None:
+        return "R$ 0"
     v = round(val)
     return f"R$ {v:,.0f}".replace(",", ".")
 
-def fmt_num(val):
-    if val is None: return "0"
-    v = round(val)
-    return f"{v:,.0f}".replace(",", ".")
 
-# ---------------- CABEÇALHO OFICIAL ----------------
-st.markdown("""
+def fmt_num(val):
+    if val is None:
+        return "0"
+    return f"{round(val):,.0f}".replace(",", ".")
+
+
+# ============================================================
+# 2. DADOS CENTRAIS DAS TRILHAS (única fonte da verdade —
+#    escada, obra, cor e coeficientes de impacto econômico)
+# ============================================================
+def pct_para_ano(ano, escada):
+    for ano_max, pct in escada:
+        if ano <= ano_max:
+            return pct
+    return escada[-1][1]
+
+
+ESCADA_PADRAO = [(6, 0), (8, 25), (10, 50), (999, 100)]
+ESCADA_SAUDE = [(8, 0), (9, 25), (10, 50), (999, 100)]
+ESCADA_EDUCACAO = [(6, 0), (8, 25), (10, 50), (999, 70)]
+
+TRILHAS = {
+    "Varejo, Indústria e Logística": {
+        "emoji": "🛒", "obra": 3, "escada": ESCADA_PADRAO, "cor": "#9A3F1E", "cor_bg": "#F7E9E1",
+        "emprego_m2": 25, "faturamento_m2": 6000,
+        "extra": "Isenção de 3 anos em alvará, licenciamento e TCL.",
+        "contrapartida": "Cota de contratação local pontua no leilão saneado.",
+        "justificativa": "Retrofit comercial é rápido (6 a 18 meses de obra) e a receita amadurece logo "
+                          "após abrir. Seis anos dá fôlego frente ao e-commerce sem virar vantagem "
+                          "permanente sobre o comércio vizinho fora do programa.",
+    },
+    "Saúde": {
+        "emoji": "🏥", "obra": 5, "escada": ESCADA_SAUDE, "cor": "#0B6B4F", "cor_bg": "#E2F0EA",
+        "emprego_m2": 20, "faturamento_m2": 8000,
+        "extra": "Prazo de obra estendido pela exigência regulatória da Anvisa.",
+        "contrapartida": "10% da capacidade de exames de alta complexidade para o SUS (Sisreg).",
+        "justificativa": "Exigência da Anvisa (gases medicinais, subestação dedicada, blindagem) alonga "
+                          "genuinamente o prazo de obra. Depois de aberto, o retorno também é mais lento: "
+                          "equipamento caro, credenciamento de convênio, maturação de carteira de pacientes.",
+    },
+    "Educação": {
+        "emoji": "🎓", "obra": 3, "escada": ESCADA_EDUCACAO, "cor": "#5B3E8A", "cor_bg": "#ECE6F5",
+        "emprego_m2": 45, "faturamento_m2": 3500, "permanente": True,
+        "extra": "Após o ano 10, desconto fixo de 30% sobre o IPTU total, revisado a cada 5 anos.",
+        "contrapartida": "10% das vagas em bolsa integral via CadÚnico.",
+        "justificativa": "Segue a lógica construtiva do Varejo, mas depois do ano 10 muda de natureza: "
+                          "não é mais sobre recuperar custo de obra, é sobre sustentar qualidade — por "
+                          "isso vira um desconto condicionado, não uma contagem de anos que termina.",
+    },
+    "Habitação": {
+        "emoji": "🏠", "obra": 3, "escada": ESCADA_PADRAO, "cor": "#8A6D1D", "cor_bg": "#F5EFDD",
+        "emprego_m2": 200, "faturamento_m2": None,
+        "extra": "20% de bônus de potencial construtivo via Operação Interligada.",
+        "contrapartida": "20% das unidades em Locação Social por 30 anos.",
+        "justificativa": "Não é sobre tempo de obra — é sobre o tempo que o mercado leva para absorver e "
+                          "vender as unidades novas, mesmo raciocínio do Reviver Centro.",
+    },
+}
+
+ALIQUOTA_IPTU = 0.025          # 2,5% a.a. sobre o valor venal (não residencial edificado)
+ALIQUOTA_INDIRETA = 0.05       # estimativa ilustrativa de ISS/ICMS(VAF) sobre o faturamento gerado
+ALIQUOTA_ITBI = 0.03           # 3% — alíquota de ITBI no Rio
+
+# ============================================================
+# 3. CABEÇALHO
+# ============================================================
+st.markdown(f"""
 <div class="gov-badge">
-    <div class="gov-header-top">ESTADO DO RIO DE JANEIRO • PREFEITURA DA CIDADE DO RIO DE JANEIRO</div>
-    <div class="main-title">PROJETO RECUPERE RIO</div>
-    <div class="sub-title">Reconversão Funcional de Ativos — Memorial Técnico e Diretrizes de Engenharia Financeira</div>
-    <div style="color: #94A3B8; font-size: 12px; margin-top: 8px;">
-        Secretaria Municipal de Fazenda e Planejamento • Secretaria de Urbanismo e Desenvolvimento Econômico
-    </div>
+    <div class="gov-header-top">Prefeitura da Cidade do Rio de Janeiro · Reconversão Funcional de Ativos</div>
+    <div class="main-title">Projeto Recupere Rio</div>
+    <div class="sub-title">Simulador de trilhas setoriais, incentivo fiscal e impacto econômico</div>
+    <div class="proto-tag">🛠️ Simulação técnica em desenvolvimento — sem caráter oficial</div>
 </div>
 """, unsafe_allow_html=True)
 
-st.info("📌 **Documento Oficial de Consolidação Técnica:** Diretrizes e parâmetros de incentivos fiscais para a reocupação de imóveis no Município do Rio de Janeiro.")
-
-# ---------------- SECÇÃO 1: DIRETRIZES GERAIS ----------------
+# ============================================================
+# 4. DIRETRIZES GERAIS
+# ============================================================
 st.markdown('<div class="sec-title">1. Diretrizes Gerais e Salvaguardas Operacionais</div>', unsafe_allow_html=True)
 
 with st.expander("1.1 Teste de Enquadramento Funcional (Regra 70/50)", expanded=True):
-    st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
+    st.write("O investidor só mantém o regime se comprovar anualmente que no mínimo **70% da área "
+             "construída** e **50% do faturamento bruto** provêm da atividade setorial declarada.")
 with st.expander("1.2 Lista de Exclusão Fechada"):
-    st.write("Vedados em qualquer trilha: estacionamentos rotativos puros, depósitos de sucata/ferro-velho, templos religiosos, sedes partidárias e painéis publicitários/outdoors.")
+    st.write("Vedados em qualquer trilha: estacionamentos rotativos puros, depósitos de sucata/ferro-velho, "
+             "templos religiosos, sedes partidárias e painéis publicitários.")
 with st.expander("1.3 Certificação Anual e Reversão Automática"):
-    st.write("A Prefeitura tem direito de vistoria sem aviso prévio. Constatado descumprimento, o benefício é cassado e cobrado como Dívida Ativa corrigida por IPCA-E.")
+    st.write("A Prefeitura tem direito de vistoria sem aviso prévio. Constatado descumprimento, o benefício "
+             "é cassado e cobrado como Dívida Ativa, corrigido por IPCA-E.")
 with st.expander("1.4 Gatilho de Revisão Quinquenal"):
-    st.write("Nenhum incentivo tributário opera em caráter perpétuo. Todos os descontos são submetidos a auditoria técnica e econômica a cada 5 anos.")
+    st.write("Nenhum incentivo opera em caráter perpétuo. Todos os descontos são auditados a cada 5 anos.")
 with st.expander("1.5 Fundamentação Quantitativa por Custo de Instalação"):
-    st.write("A diferenciação de prazos entre trilhas é fundamentada em levantamentos de custo de instalação por m² e ciclo de maturação do setor.")
+    st.write("A diferenciação de prazos entre trilhas é sustentada por levantamento de custo de instalação "
+             "por m² e ciclo de maturação de cada setor.")
 
-st.divider()
-
-# ---------------- SECÇÃO 2: FLUXO DO INSTRUMENTO ----------------
+# ============================================================
+# 5. FLUXO DO INSTRUMENTO
+# ============================================================
 st.markdown('<div class="sec-title">2. Fluxo do Instrumento</div>', unsafe_allow_html=True)
+passos = [
+    ("1", "Notificação", "IPTU progressivo, 6 meses"),
+    ("2", "Leilão saneado", "Aquisição do ativo"),
+    ("3", "Seleção da trilha", "No sistema Reconverte"),
+    ("4", "Escada de isenção", "Início pós-Habite-se"),
+]
+cols = st.columns(4)
+for c, (n, t, d) in zip(cols, passos):
+    c.markdown(f'<div class="flow-step"><b>{n}. {t}</b><br><span style="color:{CINZA_TXT};font-size:13px;">{d}</span></div>',
+               unsafe_allow_html=True)
+st.caption("Ao arrematar o imóvel no leilão saneado, o investidor seleciona a trilha no sistema Reconverte "
+           "e a escada fiscal é gerada automaticamente.")
 
-col1, col2, col3, col4 = st.columns(4)
-col1.error("📄 **1. Notificação**\n\nIPTU progressivo (6 meses)")
-col2.warning("🔨 **2. Leilão Saneado**\n\nAquisição do ativo")
-col3.info("💻 **3. Seleção da Trilha**\n\nNo sistema Reconverte")
-col4.success("📈 **4. Escada de Isenção**\n\nInício pós-Habite-se")
-st.caption("Ao arrematar o imóvel no leilão saneado, o investidor seleciona a trilha no sistema Reconverte e a escada fiscal é gerada automaticamente.")
-
-st.divider()
-
-# ---------------- SECÇÃO 3: TRILHAS SETORIAIS ----------------
+# ============================================================
+# 6. MATRIZ DE TRILHAS SETORIAIS
+# ============================================================
 st.markdown('<div class="sec-title">3. Matriz de Trilhas Setoriais</div>', unsafe_allow_html=True)
+tabs = st.tabs([f"{d['emoji']} {n}" for n, d in TRILHAS.items()])
+for tab, (nome, d) in zip(tabs, TRILHAS.items()):
+    with tab:
+        st.subheader(f"{d['emoji']} {nome}")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Isenção na obra", f"Até {d['obra']} anos")
+        c2.metric("Isenção total (100%)", f"{d['escada'][0][0]} anos")
+        c3.metric("Benefício extra", d["extra"].split(".")[0])
+        st.markdown(f"**🤝 Contrapartida social:** {d['contrapartida']}")
 
-tab1, tab2, tab3, tab4 = st.tabs(["🛒 Varejo & Indústria", "🏥 Saúde", "🎓 Educação", "🏠 Habitação"])
+# ============================================================
+# 7. SIMULADOR
+# ============================================================
+st.markdown('<div class="sec-title">4. Simulador de Engenharia Financeira</div>', unsafe_allow_html=True)
+st.write("Escolha a trilha, o tamanho do imóvel e o valor por m² — o valor venal e o IPTU integral são "
+         "calculados automaticamente.")
 
-with tab1:
-    st.subheader("🛒 Varejo, Indústria Leve e Logística")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("🏗️ Isenção na Obra", "Até 3 Anos")
-    c2.metric("📉 Escada Incremental", "6 Anos")
-    c3.metric("🎁 Benefício Extra", "Alvará + TCL Isentos (3 anos)")
-    st.markdown("**🤝 Contrapartida Social:** Cota de contratação local pontua no leilão saneado.")
-
-with tab2:
-    st.subheader("🏥 Saúde")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("🏗️ Isenção na Obra", "Até 5 Anos", delta="Exigência Anvisa", delta_color="normal")
-    c2.metric("📉 Escada Incremental", "8 Anos")
-    c3.metric("🤝 Contrapartida", "10% Capacidade SUS")
-    st.markdown("**📌 Detalhe:** Destinação de 10% de exames de alta complexidade e consultas para a regulação do SUS (Sisreg).")
-
-with tab3:
-    st.subheader("🎓 Educação")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("🏗️ Isenção na Obra", "Até 3 Anos")
-    c2.metric("📉 Escada Incremental", "6 Anos")
-    c3.metric("♾️ Benefício Permanente", "30% Desconto Fixado")
-    st.markdown("**🤝 Contrapartida Social:** 10% das vagas em bolsas de estudo integrais para moradores no CadÚnico.")
-
-with tab4:
-    st.subheader("🏠 Habitação")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("🏗️ Isenção na Obra", "Até 3 Anos")
-    c2.metric("📉 Escada Incremental", "6 Anos")
-    c3.metric("🚀 Bônus Construtivo", "+20% Potencial")
-    st.markdown("**🤝 Contrapartida Social:** 20% das unidades destinadas à Locação Social por 30 anos.")
-
-st.divider()
-
-# ---------------- SECÇÃO 4: MODELAGEM FISCAL E SIMULADOR HÍBRIDO ----------------
-st.markdown('<div class="sec-title">4. Modelagem Fiscal e Simulador de Engenharia Financeira</div>', unsafe_allow_html=True)
-st.write("Ajuste a trilha setorial e o Valor Venal do imóvel após a obra para calcular o impacto financeiro exato ano a ano (Anos 1 a 13).")
-
-# Entradas do Usuário
-col_in1, col_in2 = st.columns([1, 1])
-
+col_in1, col_in2, col_in3 = st.columns([1.2, 1, 1])
 with col_in1:
-    trilha_sel = st.selectbox(
-        "Selecione a Trilha Setorial:",
-        ["Varejo / Indústria", "Saúde", "Educação", "Habitação"]
-    )
-
+    trilha_sel = st.selectbox("Trilha setorial:", list(TRILHAS.keys()))
 with col_in2:
-    valor_venal = st.number_input(
-        "Valor Venal do Imóvel pós-obra (R$):",
-        value=8800000,
-        step=100000,
-        format="%d"
-    )
-    st.caption(f"Valor venal configurado: **{fmt_moeda(valor_venal)}**")
+    tamanho_m2 = st.slider("Tamanho do imóvel (m²):", min_value=500, max_value=15000, value=3500, step=100)
+with col_in3:
+    valor_m2 = st.number_input("Valor por m² (R$):", min_value=200, max_value=20000, value=2500, step=100)
 
-st.caption("Durante a obra, o terreno tem isenção de IPTU por até 3 anos, antes da escada iniciar a contagem a partir do Habite-se.")
+t = TRILHAS[trilha_sel]
+valor_venal = tamanho_m2 * valor_m2
+iptu_integral = valor_venal * ALIQUOTA_IPTU
 
-# Lógica de Cálculo (Alíquota Comercial de 2,5% ao ano)
-iptu_cheio_anual = valor_venal * 0.025
-anos = list(range(1, 14))
-
-pct_cobranca = []
-val_pago_list = []
-val_sem_list = []
-val_econ_list = []
-
-for ano in anos:
-    val_sem = iptu_cheio_anual
-    
-    if trilha_sel in ["Varejo / Indústria", "Habitação"]:
-        if ano <= 6: pct = 0
-        elif ano in [7, 8]: pct = 25
-        elif ano in [9, 10]: pct = 50
-        else: pct = 100
-    elif trilha_sel == "Saúde":
-        if ano <= 8: pct = 0
-        elif ano in [9, 10]: pct = 25
-        elif ano in [11, 12]: pct = 50
-        else: pct = 100
-    elif trilha_sel == "Educação":
-        if ano <= 6: pct = 0
-        elif ano in [7, 8]: pct = 25
-        elif ano in [9, 10]: pct = 50
-        else: pct = 70  # Desconto permanente de 30% (paga 70%)
-
-    val_pago = val_sem * (pct / 100.0)
-    val_econ = val_sem - val_pago
-    
-    pct_cobranca.append(f"{pct}%")
-    val_pago_list.append(val_pago)
-    val_sem_list.append(val_sem)
-    val_econ_list.append(val_econ)
-
-tot_pago = sum(val_pago_list)
-tot_sem = sum(val_sem_list)
-tot_econ = sum(val_econ_list)
-
-# Cartões de Destaque Financeiro
-m1, m2, m3 = st.columns(3)
-
-with m1:
-    st.markdown(f'<div class="metric-box-pago"><div class="val-pago">{fmt_moeda(tot_pago)}</div><div class="lbl-metric">Valor Pago Acumulado (13 Anos)</div></div>', unsafe_allow_html=True)
-
-with m2:
-    st.markdown(f'<div class="metric-box-econ"><div class="val-econ">{fmt_moeda(tot_econ)}</div><div class="lbl-metric">Economia Total vs. Cobrança Cheia</div></div>', unsafe_allow_html=True)
-
-with m3:
-    st.markdown(f'<div class="metric-box-sem"><div class="val-sem">{fmt_moeda(tot_sem)}</div><div class="lbl-metric">Custo sem Programa (IPTU Cheio)</div></div>', unsafe_allow_html=True)
-
+st.markdown(
+    f'<div class="info-line">📐 Valor venal calculado: <b>{fmt_moeda(valor_venal)}</b> &nbsp;·&nbsp; '
+    f'IPTU integral anual (pré-definido, {ALIQUOTA_IPTU*100:.1f}%): <b>{fmt_moeda(iptu_integral)}</b> '
+    f'&nbsp;·&nbsp; Isenção de obra desta trilha: <b>até {t["obra"]} anos</b> antes da escada começar, '
+    f'a partir do Habite-se.</div>', unsafe_allow_html=True)
 st.write("")
 
-# TABELA DETALHADA ANO A ANO
-st.subheader("📋 Tabela Detalhada da Evolução Tributária (Ano a Ano)")
+anos = list(range(1, 14))
+pagos, sem_beneficio, economias = [], [], []
+for ano in anos:
+    pct = pct_para_ano(ano, t["escada"])
+    pago = iptu_integral * pct / 100
+    pagos.append(pago)
+    sem_beneficio.append(iptu_integral)
+    economias.append(iptu_integral - pago)
 
-df_exibicao = pd.DataFrame({
-    "Ano": [f"Ano {a}" for a in anos],
-    "Cobrança (%)": pct_cobranca,
-    "IPTU Pago no Ano": [fmt_moeda(v) for v in val_pago_list],
-    "IPTU sem Benefício (Cheio)": [fmt_moeda(v) for v in val_sem_list],
-    "Economia no Ano": [fmt_moeda(v) for v in val_econ_list]
-})
+tot_pago, tot_sem, tot_econ = sum(pagos), sum(sem_beneficio), sum(economias)
 
-st.table(df_exibicao)
+m1, m2, m3 = st.columns(3)
+m1.markdown(f'<div class="metric-card metric-pago"><div class="metric-val" style="color:{GOLD}">{fmt_moeda(tot_pago)}</div>'
+            f'<div class="metric-lbl">Pago em 13 anos</div></div>', unsafe_allow_html=True)
+m2.markdown(f'<div class="metric-card metric-econ"><div class="metric-val" style="color:{VERDE}">{fmt_moeda(tot_econ)}</div>'
+            f'<div class="metric-lbl">Economia vs. cobrança cheia</div></div>', unsafe_allow_html=True)
+m3.markdown(f'<div class="metric-card metric-sem"><div class="metric-val" style="color:{VERMELHO}">{fmt_moeda(tot_sem)}</div>'
+            f'<div class="metric-lbl">Quanto pagaria sem o programa</div></div>', unsafe_allow_html=True)
 
-# GRÁFICO COMPARATIVO EM REAIS
-st.subheader("📊 Gráfico Comparativo Anual: Pago com Benefício vs. Cobrança Cheia (R$)")
+st.write("")
+st.subheader("📊 Comparativo ano a ano")
+fig = go.Figure()
+fig.add_bar(x=[f"Ano {a}" for a in anos], y=sem_beneficio, name="Sem o programa (cobrança cheia)", marker_color=VERMELHO)
+fig.add_bar(x=[f"Ano {a}" for a in anos], y=pagos, name="Pago com o Recupere Rio", marker_color=GOLD)
+fig.add_bar(x=[f"Ano {a}" for a in anos], y=economias, name="Economia no ano", marker_color=VERDE)
+fig.update_layout(barmode="group", plot_bgcolor="white", paper_bgcolor="white",
+                   legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
+                   margin=dict(l=10, r=10, t=10, b=10), height=380,
+                   yaxis=dict(gridcolor="#EEEDE6", tickprefix="R$ "))
+st.plotly_chart(fig, use_container_width=True)
 
-df_chart = pd.DataFrame({
-    "Ano": [f"Ano {a}" for a in anos],
-    "Com Recupere Rio (Pago)": val_pago_list,
-    "Sem Programa (Cobrança Cheia)": val_sem_list
-})
-df_chart.set_index("Ano", inplace=True)
+with st.expander("📋 Ver tabela detalhada ano a ano"):
+    df = pd.DataFrame({
+        "Ano": [f"Ano {a}" for a in anos],
+        "Cobrança": [f"{pct_para_ano(a, t['escada'])}%" for a in anos],
+        "Pago": [fmt_moeda(v) for v in pagos],
+        "Sem benefício": [fmt_moeda(v) for v in sem_beneficio],
+        "Economia": [fmt_moeda(v) for v in economias],
+    })
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
-st.bar_chart(df_chart, color=["#C5A059", "#475569"])
-st.caption("🟡 **Com Recupere Rio (Pago)** vs 🔘 **Sem Programa (Cobrança Cheia)**: A diferença entre a barra dourada e a barra cinza representa o alívio financeiro direto para o investidor.")
+# ============================================================
+# 8. IMPACTOS ECONÔMICOS PROJETADOS (empregos + impostos indiretos)
+# ============================================================
+st.markdown('<div class="sec-title">5. Impactos Econômicos Projetados</div>', unsafe_allow_html=True)
+st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado — não é uma projeção oficial "
+           "de arrecadação. O coeficiente de emprego do Varejo toma como referência o setor de shopping "
+           "centers (≈1 emprego a cada 17 m² de área bruta locável, ABRASCE/BNB).")
 
-st.divider()
+empregos_est = tamanho_m2 / t["emprego_m2"]
 
-# ---------------- SECÇÃO 5: JUSTIFICATIVA TÉCNICA DOS PRAZOS ----------------
-st.markdown('<div class="sec-title">5. Justificativa Técnica dos Prazos</div>', unsafe_allow_html=True)
+i1, i2, i3 = st.columns(3)
+i1.markdown(f'<div class="impact-card"><div class="impact-val">{fmt_num(empregos_est)}</div>'
+            f'<div class="impact-lbl">Empregos estimados gerados</div></div>', unsafe_allow_html=True)
 
+if t["faturamento_m2"] is not None:
+    faturamento_est = tamanho_m2 * t["faturamento_m2"]
+    impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
+    i2.markdown(f'<div class="impact-card"><div class="impact-val">{fmt_moeda(faturamento_est)}</div>'
+                f'<div class="impact-lbl">Faturamento anual estimado</div></div>', unsafe_allow_html=True)
+    i3.markdown(f'<div class="impact-card"><div class="impact-val">{fmt_moeda(impostos_indiretos)}</div>'
+                f'<div class="impact-lbl">Impostos indiretos estimados/ano (ISS/ICMS via VAF)</div></div>',
+                unsafe_allow_html=True)
+else:
+    itbi_est = valor_venal * ALIQUOTA_ITBI
+    i2.markdown(f'<div class="impact-card"><div class="impact-val">{fmt_moeda(itbi_est)}</div>'
+                f'<div class="impact-lbl">ITBI estimado na comercialização (única vez, 3%)</div></div>',
+                unsafe_allow_html=True)
+    i3.markdown(f'<div class="impact-card"><div class="impact-val">—</div>'
+                f'<div class="impact-lbl">Habitação não gera faturamento recorrente; ganho indireto vem do '
+                f'ITBI e do consumo dos novos moradores no bairro</div></div>', unsafe_allow_html=True)
+
+st.write("")
+st.markdown(f"**Por que essa trilha tem esse prazo?** {t['justificativa']}")
+
+# ============================================================
+# 9. JUSTIFICATIVA TÉCNICA DOS PRAZOS
+# ============================================================
+st.markdown('<div class="sec-title">6. Justificativa Técnica dos Prazos</div>', unsafe_allow_html=True)
 df_just = pd.DataFrame({
-    "Trilha": ["Varejo / Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação (incremental)", "Educação (pós-escada)", "Habitação"],
-    "Prazo Adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos", "Permanente*", "6 anos"],
-    "Fundamentação Técnica e Econômica": [
-        "Retrofit comercial é rápido (6 a 18 meses de obra). Seis anos de escada garante fôlego para competir com o e-commerce sem gerar concorrência desleal.",
-        "Exigências regulatórias da Anvisa (gases medicinais, subestação elétrica dedicada, blindagem) alongam genuinamente o tempo de obra sem receita.",
-        "Ciclo de maturação longo de equipamentos de alta complexidade e credenciamento de redes de convênios.",
-        "Mesma lógica construtiva e de amortização do setor de varejo.",
-        "Muda de natureza: deixa de ser recuperação de custo de obra e passa a incentivo condicionado à manutenção da nota máxima no MEC.",
-        "Tempo de absorção do mercado imobiliário para comercialização das unidades residenciais na planta (alinhado ao Reviver Centro)."
-    ]
+    "Trilha": ["Varejo/Indústria", "Saúde (obra)", "Saúde (incremental)", "Educação (incremental)",
+               "Educação (pós-escada)", "Habitação"],
+    "Prazo adotado": ["6 anos", "Até 5 anos", "8 anos", "6 anos", "Permanente*", "6 anos"],
+    "Fundamentação técnica": [
+        "Retrofit comercial é rápido (6 a 18 meses). Seis anos dá fôlego frente ao e-commerce sem virar "
+        "vantagem permanente sobre o comércio vizinho.",
+        "Exigência da Anvisa (gases medicinais, subestação dedicada, blindagem) alonga genuinamente o "
+        "prazo de obra sem receita.",
+        "Ciclo de maturação longo: equipamento caro, credenciamento de convênio, carteira de pacientes.",
+        "Mesma lógica construtiva e de amortização do Varejo.",
+        "Muda de natureza: não é mais sobre custo de obra, é sobre sustentar qualidade — desconto "
+        "condicionado à nota do MEC, revisado a cada 5 anos.",
+        "Tempo de absorção do mercado para vender as unidades na planta, alinhado ao Reviver Centro.",
+    ],
 })
 st.dataframe(df_just, hide_index=True, use_container_width=True)
-
-st.warning("⚠️ **Nota de Ajuste de Risco:** O par 5 + 8 anos da trilha Saúde é a premissa menos testada e recomenda-se validação técnica formal com a Secretaria Municipal de Saúde.")
+st.warning("⚠️ **Nota de ajuste de risco:** o par 5+8 anos da trilha Saúde é a premissa menos testada — "
+           "recomenda-se validação técnica formal com a Secretaria Municipal de Saúde.")
