@@ -21,147 +21,147 @@ TXT_MUTED = "#475569"
 BORDER_COLOR = "#CBD5E1"
 BG_CARD = "#F8FAFC"
 
-st.markdown(f"""
+st.markdown("""
     <style>
     /* Força Fundo Branco Global */
-    .stApp {{
+    .stApp {
         background-color: #FFFFFF !important;
-        color: {TXT_DARK} !important;
-    }}
+        color: #0F172A !important;
+    }
     
     /* Oculta Sidebar completamente */
-    [data-testid="stSidebar"] {{ display: none !important; }}
+    [data-testid="stSidebar"] { display: none !important; }
 
     /* Correção Global de Cores de Texto */
-    p, span, div, label, h1, h2, h3, h4, h5, h6, li {{
-        color: {TXT_DARK} !important;
-    }}
+    p, span, div, label, h1, h2, h3, h4, h5, h6, li {
+        color: #0F172A !important;
+    }
 
     /* FIX DEFINITIVO PARA DROPDOWNS / SELECTBOX */
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {{
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div[role="listbox"] {
         background-color: #FFFFFF !important;
-        border: 2px solid {NAVY} !important;
+        border: 2px solid #1B3A5C !important;
         border-radius: 8px !important;
         box-shadow: 0 6px 16px rgba(0,0,0,0.15) !important;
-    }}
-    div[role="option"], li[data-baseweb="option"] {{
+    }
+    div[role="option"], li[data-baseweb="option"] {
         background-color: #FFFFFF !important;
-        color: {TXT_DARK} !important;
+        color: #0F172A !important;
         font-weight: 700 !important;
         font-size: 15px !important;
         padding: 10px 14px !important;
-    }}
-    div[role="option"] *, li[data-baseweb="option"] * {{
-        color: {TXT_DARK} !important;
+    }
+    div[role="option"] *, li[data-baseweb="option"] * {
+        color: #0F172A !important;
         background-color: transparent !important;
-    }}
+    }
     div[role="option"]:hover, li[data-baseweb="option"]:hover, 
-    div[role="option"][aria-selected="true"], li[data-baseweb="option"][aria-selected="true"] {{
+    div[role="option"][aria-selected="true"], li[data-baseweb="option"][aria-selected="true"] {
         background-color: #E2E8F0 !important;
-        color: {NAVY} !important;
-    }}
-    div[data-baseweb="select"] > div {{
+        color: #1B3A5C !important;
+    }
+    div[data-baseweb="select"] > div {
         background-color: #F8FAFC !important;
-        border: 1.5px solid {BORDER_COLOR} !important;
+        border: 1.5px solid #CBD5E1 !important;
         border-radius: 8px !important;
-    }}
-    div[data-baseweb="select"] * {{
-        color: {TXT_DARK} !important;
+    }
+    div[data-baseweb="select"] * {
+        color: #0F172A !important;
         font-weight: 600 !important;
-    }}
+    }
 
     /* CAPÍTULOS DESTAQUE E CENTRALIZADOS */
-    .capitulo-box {{
+    .capitulo-box {
         text-align: center;
         background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
-        border-top: 3px solid {NAVY};
-        border-bottom: 3px solid {GOLD};
+        border-top: 3px solid #1B3A5C;
+        border-bottom: 3px solid #B8892F;
         border-radius: 10px;
         padding: 14px 18px;
         margin-top: 35px;
         margin-bottom: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }}
-    .capitulo-title {{
-        color: {NAVY} !important;
+    }
+    .capitulo-title {
+        color: #1B3A5C !important;
         font-size: 19px !important;
         font-weight: 800 !important;
         letter-spacing: 0.8px;
         margin: 0 !important;
         text-transform: uppercase;
-    }}
+    }
 
     /* CABEÇALHO OFICIAL */
-    .gov-badge {{
+    .gov-badge {
         background: linear-gradient(135deg, #002147 0%, #244B72 100%);
-        border: 1.5px solid {GOLD};
+        border: 1.5px solid #B8892F;
         border-radius: 12px;
         padding: 22px 18px;
         text-align: center;
         margin-bottom: 22px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }}
-    .gov-header-top {{
-        color: {GOLD} !important; font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    }
+    .gov-header-top {
+        color: #B8892F !important; font-size: 11px; font-weight: 800; letter-spacing: 2px;
         text-transform: uppercase; margin-bottom: 6px;
-    }}
-    .main-title {{ color: #FFFFFF !important; font-size: 26px; font-weight: 800; margin-bottom: 4px; }}
-    .sub-title {{ color: #DCE6F0 !important; font-size: 14px; }}
-    .proto-tag {{
+    }
+    .main-title { color: #FFFFFF !important; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+    .sub-title { color: #DCE6F0 !important; font-size: 14px; }
+    .proto-tag {
         display: inline-block; margin-top: 10px; background: rgba(255, 255, 255, 0.15);
         border: 1px solid rgba(255, 255, 255, 0.4); color: #F1F5F9 !important; font-size: 11px; font-weight: 600;
         padding: 4px 12px; border-radius: 20px;
-    }}
+    }
 
     /* CARTÕES DA MATRIZ SETORIAL (SEÇÃO 3) */
-    .trilha-card-container {{
-        background-color: {BG_CARD};
-        border: 1.5px solid {BORDER_COLOR};
+    .trilha-card-container {
+        background-color: #F8FAFC;
+        border: 1.5px solid #CBD5E1;
         border-radius: 12px;
         padding: 18px;
         margin-top: 10px;
         margin-bottom: 15px;
-    }}
-    .trilha-item-box {{
+    }
+    .trilha-item-box {
         background: #FFFFFF;
-        border-left: 4px solid {NAVY};
+        border-left: 4px solid #1B3A5C;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 10px;
-        border: 1px solid {BORDER_COLOR};
-    }}
-    .trilha-item-label {{
-        color: {TXT_MUTED} !important;
+        border: 1px solid #CBD5E1;
+    }
+    .trilha-item-label {
+        color: #475569 !important;
         font-size: 12px !important;
         font-weight: 700 !important;
         text-transform: uppercase;
         margin-bottom: 2px;
-    }}
-    .trilha-item-value {{
-        color: {NAVY} !important;
+    }
+    .trilha-item-value {
+        color: #1B3A5C !important;
         font-size: 15px !important;
         font-weight: 700 !important;
-    }}
+    }
 
     /* CARTÕES DE MÉTRICA DO SIMULADOR */
-    .metric-card {{
-        background: {BG_CARD}; border-radius: 10px; padding: 14px; text-align: center;
-        border: 1.5px solid {BORDER_COLOR}; margin-bottom: 10px;
-    }}
-    .metric-val {{ font-size: 23px; font-weight: 800; }}
-    .metric-lbl {{ color: {TXT_MUTED} !important; font-size: 12px; font-weight: 600; margin-top: 3px; }}
+    .metric-card {
+        background: #F8FAFC; border-radius: 10px; padding: 14px; text-align: center;
+        border: 1.5px solid #CBD5E1; margin-bottom: 10px;
+    }
+    .metric-val { font-size: 23px; font-weight: 800; }
+    .metric-lbl { color: #475569 !important; font-size: 12px; font-weight: 600; margin-top: 3px; }
 
     /* LINHA INFORMATIVA */
-    .info-line {{
-        background: #F1F5F9; border: 1px solid {BORDER_COLOR}; border-radius: 8px;
-        padding: 12px 16px; font-size: 13.5px; color: {NAVY} !important; margin-top: 10px;
-    }}
+    .info-line {
+        background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 8px;
+        padding: 12px 16px; font-size: 13.5px; color: #1B3A5C !important; margin-top: 10px;
+    }
 
-    div[data-testid="stExpander"] {{
-        background-color: {BG_CARD} !important;
-        border: 1px solid {BORDER_COLOR} !important;
+    div[data-testid="stExpander"] {
+        background-color: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
         border-radius: 8px !important;
-    }}
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -176,6 +176,13 @@ def fmt_num(val):
     if val is None: return "0"
     v = round(val)
     return f"{v:,.0f}".replace(",", ".")
+
+
+def render_card(valor, legenda, cor="#1B3A5C"):
+    st.markdown(
+        f'<div class="metric-card"><div class="metric-val" style="color:{cor};">{valor}</div><div class="metric-lbl">{legenda}</div></div>',
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -375,9 +382,12 @@ for ano in anos:
 tot_pago, tot_sem, tot_econ = sum(pagos), sum(sem_beneficio), sum(economias)
 
 m1, m2, m3 = st.columns(3)
-m1.markdown(f'<div class="metric-card" style="border-color:{GOLD};"><div class="metric-val" style="color:{GOLD}">{fmt_moeda(tot_pago)}</div><div class="metric-lbl">Pago em 13 anos</div></div>', unsafe_allow_html=True)
-m2.markdown(f'<div class="metric-card" style="border-color:{VERDE};"><div class="metric-val" style="color:{VERDE}">{fmt_moeda(tot_econ)}</div><div class="metric-lbl">Economia vs. cobrança cheia</div></div>', unsafe_allow_html=True)
-m3.markdown(f'<div class="metric-card" style="border-color:{VERMELHO};"><div class="metric-val" style="color:{VERMELHO}">{fmt_moeda(tot_sem)}</div><div class="metric-lbl">Quanto pagaria sem o programa</div></div>', unsafe_allow_html=True)
+with m1:
+    render_card(fmt_moeda(tot_pago), "Pago em 13 anos", GOLD)
+with m2:
+    render_card(fmt_moeda(tot_econ), "Economia vs. cobrança cheia", VERDE)
+with m3:
+    render_card(fmt_moeda(tot_sem), "Quanto pagaria sem o programa", VERMELHO)
 
 st.write("")
 st.subheader("📊 Comparativo Anual de Cobrança (R$)")
@@ -467,9 +477,22 @@ st.caption("Estimativa ilustrativa a partir de coeficientes médios de mercado �
 empregos_est = tamanho_m2 / t["emprego_m2"]
 
 i1, i2, i3 = st.columns(3)
-i1.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{NAVY}">{fmt_num(empregos_est)}</div><div class="metric-lbl">Empregos estimados gerados</div></div>', unsafe_allow_html=True)
+with i1:
+    render_card(fmt_num(empregos_est), "Empregos estimados gerados", NAVY)
 
 if t["faturamento_m2"] is not None:
     faturamento_est = tamanho_m2 * t["faturamento_m2"]
     impostos_indiretos = faturamento_est * ALIQUOTA_INDIRETA
-    i2.markdown(f'<div class="metric-card"><div class="metric-val"
+    with i2:
+        render_card(fmt_moeda(faturamento_est), "Faturamento anual estimado", NAVY)
+    with i3:
+        render_card(fmt_moeda(impostos_indiretos), "Impostos indiretos estimados/ano (ISS/ICMS via VAF)", NAVY)
+else:
+    itbi_est = valor_venal * ALIQUOTA_ITBI
+    with i2:
+        render_card(fmt_moeda(itbi_est), "ITBI estimado na comercialização (3%)", NAVY)
+    with i3:
+        render_card("—", "Habitação gera receita por ITBI e consumo local", TXT_MUTED)
+
+st.write("")
+st.info(f"�
