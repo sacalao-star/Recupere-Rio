@@ -597,29 +597,51 @@ cap6_html = """
 """
 st.markdown(cap6_html, unsafe_allow_html=True)
 
-df_just = pd.DataFrame({
-    "Trilha Setorial": [
-        "Varejo, Indústria e Logística",
-        "Saúde (Prazo de Obra)",
-        "Saúde (Ciclo Incremental)",
-        "Educação (Ciclo Incremental)",
-        "Educação (Fase Pós-Escada)",
-        "Habitação (Reviver Centro)"
-    ],
-    "Prazo Adotado": [
-        "6 anos",
-        "Até 5 anos",
-        "8 anos",
-        "6 anos",
-        "Desconto Permanente (30%)*",
-        "6 anos"
-    ],
-    "Fundamentação Técnica e Racional Econômico": [
-        "Retrofit comercial é rápido (6 a 18 meses). Seis anos de benefício inicial dá fôlego operacional frente ao e-commerce sem virar subsídio permanente.",
-        "Exigências regulatórias complexas da Anvisa (gases medicinais, subestação dedicada, fluxo sanitário) alongam genuinamente o período de obra sem geração de receita.",
-        "Ciclo de maturação longo: equipamentos de alta complexidade demandam alto investimento inicial, credenciamento em convênios e tempo de formação da carteira de pacientes.",
-        "Acompanha a lógica construtiva e de amortização do Varejo, cobrindo o período de implantação da instituição.",
-        "Muda de natureza após o Ano 10: deixa de ser recuperação de custo de obra e torna-se incentivo condicionado à manutenção contínua das notas de excelência no MEC.",
-        "Tempo médio de absorção do mercado imobiliário para comercialização das unidades residenciais na planta e consolidação do adensamento populacional."
-    ]
-})
+# Tabela HTML para garantir renderização perfeita em dispositivos móveis e desktops
+html_justificativa_table = """
+<div style="overflow-x: auto; margin-top: 15px; margin-bottom: 20px;">
+    <table style="width: 100%; border-collapse: collapse; background-color: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 8px; font-size: 14px; text-align: left;">
+        <thead style="background-color: #1B3A5C; color: #FFFFFF;">
+            <tr>
+                <th style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #FFFFFF; font-weight: 700; width: 25%;">Trilha Setorial</th>
+                <th style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #FFFFFF; font-weight: 700; width: 18%;">Prazo Adotado</th>
+                <th style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #FFFFFF; font-weight: 700;">Fundamentação Técnica e Racional Econômico</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background-color: #F8FAFC;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Varejo, Indústria e Logística</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">6 anos</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Retrofit comercial é rápido (6 a 18 meses). Seis anos de benefício inicial dá fôlego operacional frente ao e-commerce sem virar subsídio permanente.</td>
+            </tr>
+            <tr style="background-color: #FFFFFF;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Saúde (Prazo de Obra)</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">Até 5 anos</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Exigências regulatórias complexas da Anvisa (gases medicinais, subestação dedicada, fluxo sanitário) alongam genuinamente o período de obra sem geração de receita.</td>
+            </tr>
+            <tr style="background-color: #F8FAFC;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Saúde (Ciclo Incremental)</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">8 anos</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Ciclo de maturação longo: equipamentos de alta complexidade demandam alto investimento inicial, credenciamento em convênios e tempo de formação da carteira de pacientes.</td>
+            </tr>
+            <tr style="background-color: #FFFFFF;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Educação (Ciclo Incremental)</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">6 anos</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Acompanha a lógica construtiva e de amortização do Varejo, cobrindo o período de implantação da instituição.</td>
+            </tr>
+            <tr style="background-color: #F8FAFC;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Educação (Fase Pós-Escada)</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">Desconto Permanente (30%)*</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Muda de natureza após o Ano 10: deixa de ser recuperação de custo de obra e torna-se incentivo condicionado à manutenção contínua das notas de excelência no MEC.</td>
+            </tr>
+            <tr style="background-color: #FFFFFF;">
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #1B3A5C;">Habitação (Reviver Centro)</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; font-weight: 700; color: #B8892F;">6 anos</td>
+                <td style="padding: 12px 14px; border: 1px solid #CBD5E1; color: #0F172A; line-height: 1.5;">Tempo médio de absorção do mercado imobiliário para comercialização das unidades residenciais na planta e consolidação do adensamento populacional.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+"""
+
+st.markdown(html_justificativa_table, unsafe_allow_html=True)
